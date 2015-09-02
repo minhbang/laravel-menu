@@ -18,17 +18,16 @@
 $ composer update
 ```
 
-* **Publish config và database migrations**
-```bash
-$ php artisan vendor:publish
-$ php artisan migrate
-```
-
 * **Thêm vào file config/app.php => 'providers'**
 ```php
 	Minhbang\LaravelMenu\MenuServiceProvider::class,
 ```
 
+* **Publish config và database migrations**
+```bash
+$ php artisan vendor:publish
+$ php artisan migrate
+```
 
 ## License
 
