@@ -2,6 +2,7 @@
 namespace Minhbang\LaravelMenu;
 
 use Request;
+use Minhbang\LaravelKit\Traits\Presenter\NestablePresenter;
 
 /**
  * Class Menu
@@ -10,6 +11,7 @@ use Request;
  */
 class Menu
 {
+    use NestablePresenter;
     /**
      * @var array
      */
