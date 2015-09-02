@@ -35,44 +35,10 @@ class MenuItem extends Node
 {
     use PresentableTrait;
 
-    const TYPE_URL = 'url';
-    const TYPE_CATEGORY = 'category';
-    const TYPE_PRODUCT = 'product';
-    const TYPE_PAGE = 'page';
-
     protected $table = 'menus';
     protected $presenter = 'Minhbang\LaravelMenu\MenuItemPresenter';
     protected $fillable = ['label', 'type'];
     public $timestamps = false;
-
-    // attribute phụ, không có trong DB
-    public $url;
-    public $category_id;
-    public $product_id;
-    public $page_id;
-
-    /**
-     * Khởi tạo các attribute phụ theo params
-     */
-    public function initAttributes()
-    {
-        if ($this->exists) {
-            switch ($this->type) {
-                case static::TYPE_URL:
-                    return $this->url = $this->params;
-                    break;
-                case static::TYPE_CATEGORY:
-                    $this->category_id = $this->params;
-                    break;
-                case static::TYPE_PRODUCT:
-                    $this->product_id = $this->params;
-                    break;
-                case static::TYPE_PAGE:
-                    $this->page_id = $this->params;
-                    break;
-            }
-        }
-    }
 
     /**
      * Getter $menu->url
@@ -91,28 +57,5 @@ class MenuItem extends Node
     public static function html()
     {
         return (new static())->present()->html;
-    }
-
-    /**
-     * @param array $inputs
-     */
-    public function fillParams($inputs)
-    {
-        switch ($this->type) {
-            case static::TYPE_URL:
-                $this->params = $inputs['url'];
-                break;
-            case static::TYPE_CATEGORY:
-                $this->params = $inputs['category_id'];
-                break;
-            case static::TYPE_PRODUCT:
-                $this->params = $inputs['product_id'];
-                break;
-            case static::TYPE_PAGE:
-                $this->params = $inputs['page_id'];
-                break;
-            default:
-                $this->params = '#';
-        }
     }
 }

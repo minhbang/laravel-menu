@@ -6,16 +6,8 @@
             <td><strong>{{ $menu->id}}</strong></td>
         </tr>
         <tr>
-            <td>{{ trans('common.created_at') }}</td>
-            <td>{!! $menu->present()->createdAt !!}</td>
-        </tr>
-        <tr>
-            <td>{{ trans('common.updated_at') }}</td>
-            <td>{!! $menu->present()->updatedAt !!}</td>
-        </tr>
-        <tr>
             <td>{{ trans('menu::common.label') }}</td>
-            <td><strong>{{ $menu->label }}</strong></td>
+            <td><strong>{{ $menu->present()->label }}</strong></td>
         </tr>
         <tr>
             <td>{{ trans('menu::common.type') }}</td>
@@ -23,7 +15,7 @@
         </tr>
         <tr>
             <td>{{ trans('menu::common.params') }}</td>
-            <td><strong>{{ $menu->params }}</strong></td>
+            <td><strong>{{ $menu->present()->params }}</strong></td>
         </tr>
         <tr>
             <td>{{ trans('menu::common.url') }}</td>
