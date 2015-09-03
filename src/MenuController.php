@@ -22,7 +22,7 @@ class MenuController extends BackendController
             trans('menu::common.manage'),
             'fa-sitemap',
             [
-                route('backend.setting') => trans('backend.config'),
+                route('backend.setting.list') => trans('backend.config'),
                 '#'                      => trans('menu::common.menu')
             ]
         );
