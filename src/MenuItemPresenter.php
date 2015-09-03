@@ -23,7 +23,7 @@ class MenuItemPresenter extends Presenter
      */
     public function type()
     {
-        $type = Menu::itemAlias('Type', $this->entity->type);
+        $type = app('menu')->getTypeName($this->entity->type);
         return "<span class=\"label label-info text-uppercase\">$type</label>";
     }
 

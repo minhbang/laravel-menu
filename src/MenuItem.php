@@ -37,7 +37,7 @@ class MenuItem extends Node
 
     protected $table = 'menus';
     protected $presenter = 'Minhbang\LaravelMenu\MenuItemPresenter';
-    protected $fillable = ['label', 'type'];
+    protected $fillable = ['label', 'type', 'params'];
     public $timestamps = false;
 
     /**
@@ -57,5 +57,10 @@ class MenuItem extends Node
     public static function html()
     {
         return (new static())->present()->html;
+    }
+
+    public static function aliases()
+    {
+        
     }
 }

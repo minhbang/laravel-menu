@@ -2,7 +2,7 @@
 @section('content')
     {!! Form::model($menu,['class' => 'form-horizontal','url' => $url, 'method' => $method]) !!}
     <div class="form-group">
-        <label class="col-xs-3 control-label">{{ trans('menu.parent') }}</label>
+        <label class="col-xs-3 control-label">{{ trans('menu::common.parent') }}</label>
         <div class="col-xs-9">
             <p class="form-control-static text-primary">{{ $parent_label }}</p>
         </div>
@@ -17,7 +17,7 @@
         </div>
     </div>
     <div class="form-group{{ $errors->has('type') ? ' has-error':'' }}">
-        {!! Form::type('type', trans('menu::common.type'), ['class' => 'col-xs-3 control-label']) !!}
+        {!! Form::label('type', trans('menu::common.type'), ['class' => 'col-xs-3 control-label']) !!}
         <div class="col-xs-9">
             {!! Form::select('type', $types, null, ['class' => 'form-control selectize']) !!}
             @if($errors->has('type'))
@@ -26,7 +26,7 @@
         </div>
     </div>
     <div class="form-group{{ $errors->has('params') ? ' has-error':'' }}">
-        {!! Form::params('params', trans('menu::common.params'), ['class' => 'col-xs-3 control-label']) !!}
+        {!! Form::label('params', trans('menu::common.params'), ['class' => 'col-xs-3 control-label']) !!}
         <div class="col-xs-9">
             {!! Form::text('params', null, ['class' => 'form-control']) !!}
             @if($errors->has('params'))

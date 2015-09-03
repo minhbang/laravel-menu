@@ -5,7 +5,7 @@
         <div class="loading hidden"></div>
         <a href="{{route('backend.menu.create')}}"
            class="modal-link btn btn-success btn-xs"
-           data-title="{{trans('common.create_object', array('name' => trans('menu::common.menu_item')))}}"
+           data-title="{{trans('common.create_object', array('name' => trans('menu::common.item')))}}"
            data-label="{{trans('common.save')}}"
            data-icon="align-justify">
             <span class="glyphicon glyphicon-plus-sign"></span> {{trans('menu::common.create_item')}}
@@ -39,7 +39,7 @@
             },
             max_depth:{{ $max_depth }},
             trans: {
-                name: '{{ trans('menu::common.menu_item') }}'
+                name: '{{ trans('menu::common.item') }}'
             },
             csrf_token: '{{ csrf_token() }}'
         });

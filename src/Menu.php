@@ -115,4 +115,13 @@ class Menu
     {
         return $this->type_manager->buildUrl($type, $params);
     }
+
+    /**
+     * @param $type
+     * @return null
+     */
+    public function getTypeName($type)
+    {
+        return isset($this->types[$type]) ? $this->types[$type] : null;
+    }
 }
