@@ -117,7 +117,7 @@ class MenuController extends BackendController
             [
                 'message'    => [
                     'type'    => 'success',
-                    'content' => trans('common.create_object_success', ['name' => trans('menu::common.menu_item')])
+                    'content' => trans('common.create_object_success', ['name' => trans('menu::common.item')])
                 ],
                 'reloadPage' => true,
             ]
@@ -167,7 +167,7 @@ class MenuController extends BackendController
             [
                 'message'    => [
                     'type'    => 'success',
-                    'content' => trans('common.update_object_success', ['name' => trans('menu::common.menu_item')])
+                    'content' => trans('common.update_object_success', ['name' => trans('menu::common.item')])
                 ],
                 'reloadPage' => true,
             ]
@@ -223,7 +223,7 @@ class MenuController extends BackendController
             return response()->json(
                 [
                     'type'    => 'success',
-                    'content' => trans('common.order_object_success', ['name' => trans('menu::common.menu_item')]),
+                    'content' => trans('common.order_object_success', ['name' => trans('menu::common.item')]),
                 ]
             );
         } else {

@@ -1,6 +1,13 @@
 <?php
 namespace Minhbang\LaravelMenu;
 
+use Route;
+
+/**
+ * Class MenuType
+ *
+ * @package Minhbang\LaravelMenu
+ */
 class MenuType
 {
     /**
@@ -51,6 +58,6 @@ class MenuType
      */
     protected function urlOfRouteType($params)
     {
-        return route($params);
+        return Route::has($params) ? route($params) : "#route_$params";
     }
 }

@@ -7,15 +7,15 @@
         </tr>
         <tr>
             <td>{{ trans('menu::common.label') }}</td>
-            <td><strong>{{ $menu->present()->label }}</strong></td>
+            <td><strong>{!!$menu->present()->label!!}</strong></td>
         </tr>
         <tr>
             <td>{{ trans('menu::common.type') }}</td>
-            <td><strong>{{ $menu->present()->type }}</strong></td>
+            <td><strong>{!!$menu->present()->type!!}</strong></td>
         </tr>
         <tr>
             <td>{{ trans('menu::common.params') }}</td>
-            <td><strong>{{ $menu->present()->params }}</strong></td>
+            <td><strong>{!!$menu->present()->params!!}</strong></td>
         </tr>
         <tr>
             <td>{{ trans('menu::common.url') }}</td>
