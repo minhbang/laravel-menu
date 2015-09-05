@@ -15,7 +15,8 @@ class MenuItemPresenter extends Presenter
      */
     public function label()
     {
-        return $this->entity->label;
+        //return $this->entity->label;
+        return "{$this->entity->label}({$this->entity->depth})";
     }
 
     /**
@@ -36,17 +37,27 @@ class MenuItemPresenter extends Presenter
     }
 
     /**
+     * @param int $max_depth
      * @return string
      */
-    public function actions()
+    public function actions($max_depth)
     {
-        $child = '<a href="' . url("backend/menu/{$this->entity->id}/create") . '"
-           class="modal-link btn btn-primary btn-xs"
-           data-toggle="tooltip"
-           data-title="' . trans('common.create_child_object', ['name' => trans('menu::common.item')]) . '"
-           data-label="' . trans('common.save') . '"
-           data-icon="align-justify"><span class="glyphicon glyphicon-plus"></span>
-        </a>';
+        if($this->entity->depth < $max_depth) {
+            $child = '<a href="' . url("backend/menu/{$this->entity->id}/create") . '"
+               class="modal-link btn btn-primary btn-xs"
+               data-toggle="tooltip"
+               data-title="' . trans('common.create_child_object', ['name' => trans('menu::common.item')]) . '"
+               data-label="' . trans('common.save') . '"
+               data-icon="align-justify"><span class="glyphicon glyphicon-plus"></span>
+            </a>';
+        } else {
+            $child = '<a href="#"
+               class="btn btn-primary btn-xs disabled"
+               data-toggle="tooltip"
+               data-title="' . trans('common.create_child_object', ['name' => trans('menu::common.item')]) . '">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>';
+        }
 
         $show = '<a href="' . url("backend/menu/{$this->entity->id}") . '"
            data-toggle="tooltip"

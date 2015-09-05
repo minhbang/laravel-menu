@@ -90,11 +90,12 @@ class Menu
      *
      * @see https://github.com/dbushell/Nestable
      * @param \Minhbang\LaravelMenu\MenuItem $root
+     * @param int $max_depth
      * @return string
      */
-    public function nestable($root)
+    public function nestable($root, $max_depth)
     {
-        return $this->toNestable($root->getImmediateDescendants());
+        return $this->toNestable($root->getImmediateDescendants(), $max_depth);
     }
 
     /**

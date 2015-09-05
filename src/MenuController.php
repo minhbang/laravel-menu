@@ -34,7 +34,7 @@ class MenuController extends BackendController
             $this->switchMenuRoot($root);
         }
         $max_depth = $this->menuRoot->getOption('max_depth', config('menu.default_max_depth'));
-        $nestable = $this->menuManager->nestable($this->menuRoot);
+        $nestable = $this->menuManager->nestable($this->menuRoot, $max_depth);
         $menus = $this->menuManager->labels;
         $current = $this->menuRoot->name;
         $this->buildHeading(
@@ -219,7 +219,8 @@ class MenuController extends BackendController
      */
     public function data()
     {
-        return response()->json(['html' => $this->menuManager->nestable($this->menuRoot)]);
+        $max_depth = $this->menuRoot->getOption('max_depth', config('menu.default_max_depth'));
+        return response()->json(['html' => $this->menuManager->nestable($this->menuRoot, $max_depth)]);
     }
 
     /**
