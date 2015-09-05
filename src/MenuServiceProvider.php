@@ -51,7 +51,8 @@ class MenuServiceProvider extends ServiceProvider
                 $config = config('menu.config');
                 return new Menu(
                     config('menu.actives'),
-                    new $config()
+                    new $config(),
+                    config('menu.presenters')
                 );
             }
         );

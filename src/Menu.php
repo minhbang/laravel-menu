@@ -23,6 +23,10 @@ class Menu
     protected $config;
 
     /**
+     * @var array
+     */
+    protected $presenters = [];
+    /**
      * Menu types list
      *
      * @var array
@@ -46,8 +50,9 @@ class Menu
     /**
      * @param array $actives
      * @param \Minhbang\LaravelMenu\MenuConfig $config
+     * @param array $presenters
      */
-    function __construct($actives, $config)
+    function __construct($actives, $config, $presenters)
     {
         $this->actives = $actives;
         $this->config = $config;
@@ -56,32 +61,25 @@ class Menu
         foreach ($this->lists as $menu => $options) {
             $this->labels[$menu] = trans("menu::common.{$menu}");
         }
+        foreach ($presenters as $name => $class_name) {
+            $this->presenters[$name] = new $class_name();
+        }
     }
 
     /**
      * Render html theo format boostrap navbar
      *
      * @param \Minhbang\LaravelMenu\MenuItem|string $root
-     * @param bool $home thêm home icon
      * @return string|null
      */
-    public function html($root = 'main', $home = false)
+    public function html($root = 'main')
     {
         if (is_string($root)) {
             $root = MenuItem::where('name', $root)->first();
         }
         if ($root) {
-            $nodes = $root->getImmediateDescendants();
-            $html = "<ul class=\"nav navbar-nav\">";
-            if ($home) {
-                $html .= "<li{$this->getActive(url('/'))}><a href=\"" .
-                    url('/') . "\" class=\"home\"><span class=\"glyphicon glyphicon-home\"></span></a></li>";
-            }
-            foreach ($nodes as $node) {
-                $html .= $node->present()->html;
-            }
-            $html .= '</ul>';
-            return $html;
+            $presenter = $root->getOption('presenter', 'default');
+            return $this->presenters[$presenter]->html($root);
         } else {
             return null;
         }

@@ -35,35 +35,6 @@ class MenuItemPresenter extends Presenter
         return '<span class="label label-default">' . $this->entity->params . '</label>';
     }
 
-
-    public function html()
-    {
-        return $this->renderHtml($this->entity);
-    }
-
-    /**
-     * @param \Minhbang\LaravelMenu\MenuItem|\Illuminate\Database\Query\Builder $node
-     * @param integer $level
-     * @return string
-     */
-    protected function renderHtml($node, $level = 1)
-    {
-        if ($node->isLeaf()) {
-            $active = app('menu')->getActive($node->url);
-            return "<li{$active}><a href=\"{$node->url}\">{$node->label}</a></li>";
-        } else {
-            $dropdown = 'dropdown' . ($level > 1 ? '-submenu' : '');
-            $html = "<li class=\"{$dropdown}\"><a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-hover=\"dropdown\" data-delay=\"10\" title=\"{$node->label}\">
-                {$node->label}</a>";
-            $html .= "<ul class=\"dropdown-menu\" role=\"menu\">";
-            foreach ($node->children as $child) {
-                $html .= $this->renderHtml($child, $level + 1);
-            }
-            $html .= '</ul></li>';
-            return $html;
-        }
-    }
-
     /**
      * @return string
      */
