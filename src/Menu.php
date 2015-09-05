@@ -18,24 +18,34 @@ class Menu
     protected $actives = [];
 
     /**
-     * @var \Minhbang\LaravelMenu\MenuType
+     * @var \Minhbang\LaravelMenu\MenuConfig
      */
-    protected $type_manager;
+    protected $config;
 
     /**
+     * Menu types list
+     *
      * @var array
      */
     public $types;
 
     /**
-     * @param array $actives
-     * @param \Minhbang\LaravelMenu\MenuType $type_manager
+     * Danh sách menu
+     *
+     * @var  array
      */
-    function __construct($actives, $type_manager)
+    public $lists;
+
+    /**
+     * @param array $actives
+     * @param \Minhbang\LaravelMenu\MenuConfig $config
+     */
+    function __construct($actives, $config)
     {
         $this->actives = $actives;
-        $this->type_manager = $type_manager;
-        $this->types = $type_manager->lists;
+        $this->config = $config;
+        $this->types = $config->getTypes();
+        $this->lists = $config->getLists();
     }
 
     /**
@@ -113,15 +123,74 @@ class Menu
      */
     public function getUrl($type, $params)
     {
-        return $this->type_manager->buildUrl($type, $params);
+        return $this->config->buildUrl($type, $params);
     }
 
     /**
-     * @param $type
-     * @return null
+     * @param string $type
+     * @return string|null
      */
     public function getTypeName($type)
     {
         return isset($this->types[$type]) ? $this->types[$type] : null;
+    }
+
+    /**
+     * @param string $type
+     * @return bool
+     */
+    public function hasType($type)
+    {
+        return isset($this->types[$type]);
+    }
+
+    /**
+     * @param stirng $menu
+     * @return string|null
+     */
+    public function getMenuName($menu)
+    {
+        return $this->lists[$menu]['label'];
+    }
+
+    /**
+     * @param stirng $menu
+     * @return string|null
+     */
+    public function getMenuOptions($menu)
+    {
+        return $this->lists[$menu]['options'];
+    }
+
+    /**
+     * @param string $menu
+     * @return bool
+     */
+    public function hasMenu($menu)
+    {
+        return isset($this->lists[$menu]);
+    }
+
+    /**
+     * @param string $menu
+     * @return \Minhbang\LaravelMenu\MenuItem|null
+     */
+    public function getMenuRoot($menu = 'main')
+    {
+        if ($this->hasMenu($menu)) {
+            if ($root = MenuItem::where('type', 'menu')->where('label', $menu)->first()) {
+                return $root;
+            }
+            return MenuItem::create(
+                [
+                    'label'   => $menu,
+                    'type'    => 'menu',
+                    'params'  => '#',
+                    'options' => $this->getMenuOptions($menu),
+                ]
+            );
+        } else {
+            return null;
+        }
     }
 }

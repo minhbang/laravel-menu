@@ -6,9 +6,22 @@ use Request;
 
 class MenuController extends BackendController
 {
+    /**
+     * Node gốc dùng phân loại menu
+     *
+     * @var \Minhbang\LaravelMenu\MenuItem
+     */
+    protected $menuRoot;
+    /**
+     * @var \Menu;
+     */
+    protected $menuManager;
+
     public function __construct()
     {
         parent::__construct(config('menu.middlewares'));
+        $this->menuManager = app('menu');
+        $this->switchMenuRoot();
     }
 
     /**
@@ -16,17 +29,22 @@ class MenuController extends BackendController
      */
     public function index()
     {
-        $max_depth = config('menu.max_depth');
-        $nestable = app('menu')->nestable();
+        if ($root = Request::get('root')) {
+            $this->switchMenuRoot($root);
+        }
+        $max_depth = $this->menuRoot->getOption('max_depth', config('menu.default_max_depth'));
+        $nestable = $this->menuManager->nestable();
+        $menus = $this->menuManager->lists;
+        $current = $this->menuRoot->label;
         $this->buildHeading(
             trans('menu::common.manage'),
             'fa-sitemap',
             [
                 route('backend.setting.list') => trans('backend.config'),
-                '#'                      => trans('menu::common.menu')
+                '#'                           => trans('menu::common.menu')
             ]
         );
-        return view('menu::index', compact('max_depth', 'nestable'));
+        return view('menu::index', compact('max_depth', 'nestable', 'menus', 'current'));
     }
 
     /**
@@ -65,7 +83,7 @@ class MenuController extends BackendController
         }
         $menu = new MenuItem();
         $method = 'post';
-        $types = app('menu')->types;
+        $types = $this->menuManager->types;
         return view(
             'menu::form',
             compact('parent_label', 'url', 'method', 'menu', 'types')
@@ -146,7 +164,7 @@ class MenuController extends BackendController
         $parent_label = $menu->isRoot() ? '- ROOT -' : $menu->parent->label;
         $url = route('backend.menu.update', ['menu' => $menu->id]);
         $method = 'put';
-        $types = app('menu')->types;
+        $types = $this->menuManager->types;
         return view('menu::form', compact('parent_label', 'url', 'method', 'menu', 'types'));
     }
 
@@ -198,7 +216,7 @@ class MenuController extends BackendController
      */
     public function data()
     {
-        return response()->json(['html' => app('menu')->nestable()]);
+        return response()->json(['html' => $this->menuManager->nestable()]);
     }
 
     /**
@@ -260,5 +278,22 @@ class MenuController extends BackendController
                 'content' => trans('menu::common.not_found')
             ]
         ));
+    }
+
+    /**
+     * Chuyển menu hiện tại,
+     * 404 khi $menu root chưa được khai báo
+     *
+     * @param string|null $menu
+     */
+    protected function switchMenuRoot($menu = null)
+    {
+        $menu = $menu ?: session('MenuResource_menu', 'main');
+        if ($this->menuRoot = $this->menuManager->getMenuRoot($menu)) {
+            session(['MenuResource_menu' => $menu]);
+        } else {
+            session(['MenuResource_menu' => null]);
+            abort(404);
+        }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 return [
-    'types'     => Minhbang\LaravelMenu\MenuType::class,
+    'config'      => Minhbang\LaravelMenu\MenuConfig::class,
     /**
      * $patterns của các URI khi check active
      * Ví dụ: '/a/b' sẽ active khi truy cập /c/d*, /c/f*...
@@ -9,8 +9,8 @@ return [
      *     '/uri/khac' => '/co/the/dung/string/pattern'
      * ],
      */
-    'actives'   => [],
-    'add_route' => true,
-    'max_depth' => 3,
+    'actives'     => [],
+    'add_route'   => true,
+    'default_max_depth'   => 3,
     'middlewares' => 'admin'
 ];

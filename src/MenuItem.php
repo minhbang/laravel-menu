@@ -34,11 +34,31 @@ use Baum\Node;
 class MenuItem extends Node
 {
     use PresentableTrait;
-
     protected $table = 'menus';
     protected $presenter = 'Minhbang\LaravelMenu\MenuItemPresenter';
-    protected $fillable = ['label', 'type', 'params'];
+    protected $fillable = ['label', 'type', 'params', 'options'];
     public $timestamps = false;
+    /**
+     * @var array
+     */
+    protected $_options;
+
+    /**
+     * @param null|string $key
+     * @param mixed $default
+     * @return mixed;
+     */
+    public function getOption($key = null, $default = null)
+    {
+        if (empty($this->options)) {
+            return $default;
+        } else {
+            if (is_null($this->_options)) {
+                $this->_options = json_decode($this->options, true);
+            }
+            return is_null($key) ? $this->_options : array_get($this->_options, $key, $default);
+        }
+    }
 
     /**
      * Getter $menu->url
@@ -57,10 +77,5 @@ class MenuItem extends Node
     public static function html()
     {
         return (new static())->present()->html;
-    }
-
-    public static function aliases()
-    {
-        
     }
 }

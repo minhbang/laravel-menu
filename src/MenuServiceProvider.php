@@ -48,10 +48,10 @@ class MenuServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
         $this->app['menu'] = $this->app->share(
             function ($app) {
-                $types = config('menu.types');
+                $config = config('menu.config');
                 return new Menu(
                     config('menu.actives'),
-                    new $types()
+                    new $config()
                 );
             }
         );
