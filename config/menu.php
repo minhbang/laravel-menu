@@ -11,6 +11,6 @@ return [
      */
     'actives'     => [],
     'add_route'   => true,
-    'default_max_depth'   => 3,
+    'default_max_depth'   => 2,
     'middlewares' => 'admin'
 ];

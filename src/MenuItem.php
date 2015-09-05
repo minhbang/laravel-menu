@@ -12,9 +12,11 @@ use Baum\Node;
  * @property integer $lft
  * @property integer $rgt
  * @property integer $depth
+ * @property string $name
  * @property string $label
  * @property string $type
  * @property string $params
+ * @property string $options
  * @property-read mixed $url
  * @property-read \Minhbang\LaravelMenu\MenuItem $parent
  * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelMenu\MenuItem[] $children
@@ -36,7 +38,7 @@ class MenuItem extends Node
     use PresentableTrait;
     protected $table = 'menus';
     protected $presenter = 'Minhbang\LaravelMenu\MenuItemPresenter';
-    protected $fillable = ['label', 'type', 'params', 'options'];
+    protected $fillable = ['name', 'label', 'type', 'params', 'options'];
     public $timestamps = false;
     /**
      * @var array

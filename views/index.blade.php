@@ -1,6 +1,6 @@
 @extends('backend.layouts.main')
 @section('content')
-<div class="panel panel-default panel-nestable">
+<div class="panel panel-default panel-nestable panel-sidebar">
     <div class="panel-heading clearfix">
         <div class="loading hidden"></div>
         <a href="{{route('backend.menu.create')}}"
@@ -17,10 +17,26 @@
             <span class="glyphicon glyphicon-circle-arrow-down"></span>
         </a>
     </div>
-    <div class="panel-body bg-warning">
-        <div id="nestable-container" class="dd">
-            {!! $nestable !!}
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-9">
+                <div class="panel-body-content left">
+                    <div id="nestable-container" class="dd">{!! $nestable !!}</div>
+                </div>
+            </div>
+            <div class="col-xs-3">
+                <div class="panel-body-sidebar right">
+                    <ul class="nav nav-tabs tabs-right">
+                    @foreach($menus as $menu => $label)
+                        <li{!! $current ==$menu ? ' class="active"':'' !!}>
+                            <a href="{{route('backend.menu.root', ['root' =>$menu])}}">{{$label}}</a>
+                        </li>
+                    @endforeach
+                    </ul>
+                </div>
+            </div>
         </div>
+
     </div>
     <div class="panel-footer">
         <span class="glyphicon glyphicon-info-sign"></span> {{ trans('menu::common.order_hint')}}

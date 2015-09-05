@@ -6,6 +6,10 @@
             <td><strong>{{ $menu->id}}</strong></td>
         </tr>
         <tr>
+            <td>{{ trans('menu::common.name') }}</td>
+            <td><strong>{{$menu->name}}</strong></td>
+        </tr>
+        <tr>
             <td>{{ trans('menu::common.label') }}</td>
             <td><strong>{!!$menu->present()->label!!}</strong></td>
         </tr>

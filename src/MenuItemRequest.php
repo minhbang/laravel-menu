@@ -7,6 +7,7 @@ class MenuItemRequest extends Request
 {
     public $trans_prefix = 'menu::common';
     public $rules = [
+        'name'  => 'required|max:100',
         'label'  => 'required|max:100',
         'type'   => 'required|max:100',
         'params' => 'required',

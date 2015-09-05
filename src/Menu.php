@@ -37,6 +37,13 @@ class Menu
     public $lists;
 
     /**
+     * Danh sách menu label
+     *
+     * @var  array
+     */
+    public $labels = [];
+
+    /**
      * @param array $actives
      * @param \Minhbang\LaravelMenu\MenuConfig $config
      */
@@ -46,46 +53,50 @@ class Menu
         $this->config = $config;
         $this->types = $config->getTypes();
         $this->lists = $config->getLists();
+        foreach ($this->lists as $menu => $options) {
+            $this->labels[$menu] = trans("menu::common.{$menu}");
+        }
     }
 
     /**
      * Render html theo format boostrap navbar
      *
+     * @param \Minhbang\LaravelMenu\MenuItem|string $root
      * @param bool $home thêm home icon
-     * @return string
+     * @return string|null
      */
-    public function html($home = false)
+    public function html($root = 'main', $home = false)
     {
-        $roots = $this->getRoots();
-        $html = "<ul class=\"nav navbar-nav\">";
-        if ($home) {
-            $html .= "<li{$this->getActive(url('/'))}><a href=\"" .
-                url('/') . "\" class=\"home\"><span class=\"glyphicon glyphicon-home\"></span></a></li>";
+        if (is_string($root)) {
+            $root = MenuItem::where('name', $root)->first();
         }
-        foreach ($roots as $root) {
-            $html .= $root->present()->html;
+        if ($root) {
+            $nodes = $root->getImmediateDescendants();
+            $html = "<ul class=\"nav navbar-nav\">";
+            if ($home) {
+                $html .= "<li{$this->getActive(url('/'))}><a href=\"" .
+                    url('/') . "\" class=\"home\"><span class=\"glyphicon glyphicon-home\"></span></a></li>";
+            }
+            foreach ($nodes as $node) {
+                $html .= $node->present()->html;
+            }
+            $html .= '</ul>';
+            return $html;
+        } else {
+            return null;
         }
-        $html .= '</ul>';
-        return $html;
     }
 
     /**
      * Render html theo định dạng của jquery nestable plugin
      *
      * @see https://github.com/dbushell/Nestable
+     * @param \Minhbang\LaravelMenu\MenuItem $root
      * @return string
      */
-    public function nestable()
+    public function nestable($root)
     {
-        return $this->toNestable($this->getRoots());
-    }
-
-    /**
-     * @return \Minhbang\LaravelMenu\MenuItem[]
-     */
-    protected function getRoots()
-    {
-        return MenuItem::roots()->get();
+        return $this->toNestable($root->getImmediateDescendants());
     }
 
     /**
@@ -128,38 +139,11 @@ class Menu
 
     /**
      * @param string $type
-     * @return string|null
-     */
-    public function getTypeName($type)
-    {
-        return isset($this->types[$type]) ? $this->types[$type] : null;
-    }
-
-    /**
-     * @param string $type
      * @return bool
      */
     public function hasType($type)
     {
         return isset($this->types[$type]);
-    }
-
-    /**
-     * @param stirng $menu
-     * @return string|null
-     */
-    public function getMenuName($menu)
-    {
-        return $this->lists[$menu]['label'];
-    }
-
-    /**
-     * @param stirng $menu
-     * @return string|null
-     */
-    public function getMenuOptions($menu)
-    {
-        return $this->lists[$menu]['options'];
     }
 
     /**
@@ -178,15 +162,16 @@ class Menu
     public function getMenuRoot($menu = 'main')
     {
         if ($this->hasMenu($menu)) {
-            if ($root = MenuItem::where('type', 'menu')->where('label', $menu)->first()) {
+            if ($root = MenuItem::where('type', 'menu')->where('name', $menu)->first()) {
                 return $root;
             }
             return MenuItem::create(
                 [
+                    'name'    => $menu,
                     'label'   => $menu,
                     'type'    => 'menu',
                     'params'  => '#',
-                    'options' => $this->getMenuOptions($menu),
+                    'options' => $this->lists[$menu],
                 ]
             );
         } else {

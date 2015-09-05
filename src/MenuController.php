@@ -25,19 +25,20 @@ class MenuController extends BackendController
     }
 
     /**
+     * @param string|null $root
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index($root = null)
     {
-        if ($root = Request::get('root')) {
+        if ($root) {
             $this->switchMenuRoot($root);
         }
         $max_depth = $this->menuRoot->getOption('max_depth', config('menu.default_max_depth'));
-        $nestable = $this->menuManager->nestable();
-        $menus = $this->menuManager->lists;
-        $current = $this->menuRoot->label;
+        $nestable = $this->menuManager->nestable($this->menuRoot);
+        $menus = $this->menuManager->labels;
+        $current = $this->menuRoot->name;
         $this->buildHeading(
-            trans('menu::common.manage'),
+            [trans('menu::common.manage'), "[{$menus[$current]}]"],
             'fa-sitemap',
             [
                 route('backend.setting.list') => trans('backend.config'),
@@ -129,6 +130,8 @@ class MenuController extends BackendController
         $menu->save();
         if ($parent) {
             $menu->makeChildOf($parent);
+        } else {
+            $menu->makeChildOf($this->menuRoot);
         }
         return view(
             '_modal_script',
@@ -216,7 +219,7 @@ class MenuController extends BackendController
      */
     public function data()
     {
-        return response()->json(['html' => $this->menuManager->nestable()]);
+        return response()->json(['html' => $this->menuManager->nestable($this->menuRoot)]);
     }
 
     /**

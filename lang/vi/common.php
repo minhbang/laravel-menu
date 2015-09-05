@@ -3,6 +3,7 @@ return [
     'menu'           => 'Menu',
     'manage'         => 'Quản lý Menu',
     'parent'         => 'Menu cha',
+    'name'           => 'Tên menu',
     'label'          => 'Nhãn',
     'type'           => 'Loại menu',
     'params'         => 'Tham số',
@@ -15,4 +16,6 @@ return [
     'order_hint'     => 'Kéo các mục Menu để di chuyển đến vị trí mới',
     'not_found'      => 'Không tìm thấy Mục Menu yêu cầu.',
     'main'           => 'Main menu',
+    'footer'         => 'Footer menu',
+    'bottom'         => 'Bottom menu',
 ];

@@ -19,17 +19,13 @@ class MenuConfig
     public function getLists()
     {
         $lists = $this->lists() + [
-                'main' => [
-                    'label'   => trans('menu::common.main'),
-                    'options' => '{"max_depth":3}'
-                ],
+                'main'   => '{"max_depth":2}',
+                'footer' => '{"max_depth":2}',
+                'bottom' => '{"max_depth":1}',
             ];
-        foreach ($lists as $menu => &$config) {
-            if (is_string($config)) {
-                $config = [
-                    'label'   => $config,
-                    'options' => null,
-                ];
+        foreach ($lists as $menu => $options) {
+            if ($options === false) {
+                unset($lists[$menu]);
             }
         }
         return $lists;
@@ -68,8 +64,7 @@ class MenuConfig
         return [];
     }
 
-    /** Set custom menu
-     * Dạng ['menu' => 'menu label'] hoặc ['menu' => ['label'=>'menu label', 'options' => json]
+    /** Set custom menu, dạng ['menu' => 'json options']
      *
      * @return array
      */
