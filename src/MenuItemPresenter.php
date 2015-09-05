@@ -15,8 +15,7 @@ class MenuItemPresenter extends Presenter
      */
     public function label()
     {
-        //return $this->entity->label;
-        return "{$this->entity->label}({$this->entity->depth})";
+        return $this->entity->label;
     }
 
     /**
