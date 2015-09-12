@@ -18,9 +18,9 @@ class Menu
     protected $actives = [];
 
     /**
-     * @var \Minhbang\LaravelMenu\MenuConfig
+     * @var \Minhbang\LaravelMenu\MenuFactory
      */
-    protected $config;
+    protected $factory;
 
     /**
      * @var array
@@ -49,15 +49,15 @@ class Menu
 
     /**
      * @param array $actives
-     * @param \Minhbang\LaravelMenu\MenuConfig $config
+     * @param \Minhbang\LaravelMenu\MenuFactory $factory
      * @param array $presenters
      */
-    function __construct($actives, $config, $presenters)
+    function __construct($actives, $factory, $presenters)
     {
         $this->actives = $actives;
-        $this->config = $config;
-        $this->types = $config->getTypes();
-        $this->lists = $config->getLists();
+        $this->factory = $factory;
+        $this->types = $factory->getTypes();
+        $this->lists = $factory->getLists();
         foreach ($this->lists as $menu => $options) {
             $this->labels[$menu] = trans("menu::common.{$menu}");
         }
@@ -102,9 +102,9 @@ class Menu
      * Kiểm tra $uri active
      *
      * @param string $uri
-     * @return string
+     * @return bool
      */
-    public function getActive($uri)
+    public function isActive($uri)
     {
         $current = str_replace(url('/'), '', Request::url());
         if (empty($current)) {
@@ -117,13 +117,13 @@ class Menu
                 }
                 foreach ($patterns as $pattern) {
                     if (str_is($pattern, $current)) {
-                        return ' class="active"';
+                        return true;
                     }
                 }
             }
             $active = $uri !== '/' && str_is("{$uri}*", $current);
         }
-        return $active ? ' class="active"' : '';
+        return $active;
     }
 
     /**
@@ -133,7 +133,7 @@ class Menu
      */
     public function getUrl($type, $params)
     {
-        return $this->config->buildUrl($type, $params);
+        return $this->factory->buildUrl($type, $params);
     }
 
     /**

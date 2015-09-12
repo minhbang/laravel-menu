@@ -1,11 +1,15 @@
 <?php
 namespace Minhbang\LaravelMenu\Presenters;
 
-class DefaultPresenter
+use Html;
+
+class DefaultPresenter extends Presenter
 {
     /**
+     * Render menu dạng dropdown đa cấp
+     *
      * @param \Minhbang\LaravelMenu\MenuItem $menu root node
-     * @return string|null
+     * @return string|null html menu
      */
     public function html($menu)
     {
@@ -14,11 +18,19 @@ class DefaultPresenter
             return '';
         } else {
             $max_depth = $menu->getOption('max_depth', config('menu.default_max_depth'));
-            $html = "<ul class=\"nav navbar-nav\">";
+            $tag = $menu->getOption('tag', 'ul');
+
+            $item_tag = $menu->getOption('item_tag', 'li');
+            $item_attributes = $menu->getOption('item_attributes', []);
+
+            $html = '';
             foreach ($items as $item) {
-                $html .= $this->htmlItem($item, $max_depth);
+                $html .= $this->htmlItem($item, $max_depth, $tag, $item_tag, $item_attributes);
             }
-            $html .= '</ul>';
+
+            $attributes = Html::attributes($menu->getOption('attributes', []));
+            $html = "<{$tag}{$attributes}>$html</{$tag}>";
+
             return $html;
         }
     }
@@ -26,23 +38,30 @@ class DefaultPresenter
     /**
      * @param \Minhbang\LaravelMenu\MenuItem $item
      * @param integer $max_depth
+     * @param string $tag
+     * @param string $item_tag
+     * @param array $item_attributes
      * @param integer $depth
      * @return string
      */
-    protected function htmlItem($item, $max_depth, $depth = 1)
+    protected function htmlItem($item, $max_depth, $tag, $item_tag, $item_attributes, $depth = 1)
     {
         if ($item->isLeaf() || $depth == $max_depth) {
-            $active = app('menu')->getActive($item->url);
-            return "<li{$active}><a href=\"{$item->url}\">{$item->label}</a></li>";
+            $attributes = $item_attributes;
+            if (app('menu')->isActive($item->url)) {
+                $this->addClass($attributes, 'active');
+            }
+            $attributes = Html::attributes($attributes);
+            return "<{$item_tag}{$attributes}><a href=\"{$item->url}\">{$item->label}</a></{$item_tag}>";
         } else {
             $dropdown = 'dropdown' . ($depth > 1 ? '-submenu' : '');
-            $html = "<li class=\"{$dropdown}\"><a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-hover=\"dropdown\" data-delay=\"10\" title=\"{$item->label}\">
+            $html = "<{$item_tag} class=\"{$dropdown}\"><a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-hover=\"dropdown\" data-delay=\"10\" title=\"{$item->label}\">
                 {$item->label}</a>";
-            $html .= "<ul class=\"dropdown-menu\" role=\"menu\">";
+            $html .= "<{$tag} class=\"dropdown-menu\" role=\"menu\">";
             foreach ($item->children as $child) {
-                $html .= $this->htmlItem($child, $max_depth, $depth + 1);
+                $html .= $this->htmlItem($child, $max_depth, $tag, $item_tag, $item_attributes, $depth + 1);
             }
-            $html .= '</ul></li>';
+            $html .= "</{$tag}></{$item_tag}>";
             return $html;
         }
     }

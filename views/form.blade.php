@@ -7,21 +7,21 @@
             <p class="form-control-static text-primary">{{ $parent_label }}</p>
         </div>
     </div>
-    <div class="form-group{{ $errors->has('name') ? ' has-error':'' }}">
-        {!! Form::label('name', trans('menu::common.name'), ['class' => 'col-xs-3 control-label']) !!}
-        <div class="col-xs-9">
-            {!! Form::text('name', null, ['class' => 'form-control']) !!}
-            @if($errors->has('name'))
-                <p class="help-block">{{ $errors->first('name') }}</p>
-            @endif
-        </div>
-    </div>
     <div class="form-group{{ $errors->has('label') ? ' has-error':'' }}">
         {!! Form::label('label', trans('menu::common.label'), ['class' => 'col-xs-3 control-label']) !!}
         <div class="col-xs-9">
-            {!! Form::text('label', null, ['class' => 'form-control']) !!}
+            {!! Form::text('label', null, ['class' => 'has-slug form-control','data-slug_target' => "#name"]) !!}
             @if($errors->has('label'))
                 <p class="help-block">{{ $errors->first('label') }}</p>
+            @endif
+        </div>
+    </div>
+    <div class="form-group{{ $errors->has('name') ? ' has-error':'' }}">
+        {!! Form::label('name', trans('menu::common.name'), ['class' => 'col-xs-3 control-label']) !!}
+        <div class="col-xs-9">
+            {!! Form::text('name', null, ['class' => 'form-control', 'id' => 'name']) !!}
+            @if($errors->has('name'))
+                <p class="help-block">{{ $errors->first('name') }}</p>
             @endif
         </div>
     </div>
