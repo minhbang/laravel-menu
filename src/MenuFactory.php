@@ -27,6 +27,7 @@ class MenuFactory
     public function getLists()
     {
         $lists = $this->lists() + [
+                'top'    => '{"max_depth":1,"presenter":"list1","tag":"ul","item_tag":"li","attributes":{"class":"nav navbar-nav pull-left"}}',
                 'main'   => '{"max_depth":2,"attributes":{"class":"nav navbar-nav"}}',
                 'footer' => '{"max_depth":2,"presenter":"list2","tag":"","item_tag":"div","item_attributes":{"class":"col-md-2 col-sm-6"}}',
                 'bottom' => '{"max_depth":1,"presenter":"list1","tag":"ul","item_tag":"li","attributes":{"class":"pull-right list-inline"}}',

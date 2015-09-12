@@ -15,6 +15,7 @@ return [
     'item'           => 'Mục Menu',
     'order_hint'     => 'Kéo các mục Menu để di chuyển đến vị trí mới',
     'not_found'      => 'Không tìm thấy Mục Menu yêu cầu.',
+    'top'            => 'Top menu',
     'main'           => 'Main menu',
     'footer'         => 'Footer menu',
     'bottom'         => 'Bottom menu',
