@@ -18,14 +18,14 @@
         </a>
     </div>
     <div class="panel-body">
-        <div class="row">
-            <div class="col-xs-9">
-                <div class="panel-body-content left">
-                    <div id="nestable-container" class="dd">{!! $nestable !!}</div>
+        <div class="row row-height">
+            <div class="row-height-inside">
+                <div class="col-xs-9 col-height">
+                    <div class="panel-body-content">
+                        <div id="nestable-container" class="dd">{!! $nestable !!}</div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-xs-3">
-                <div class="panel-body-sidebar right">
+                <div class="col-xs-3 col-height panel-body-sidebar right">
                     <ul class="nav nav-tabs tabs-right">
                     @foreach($menus as $menu => $label)
                         <li{!! $current ==$menu ? ' class="active"':'' !!}>
