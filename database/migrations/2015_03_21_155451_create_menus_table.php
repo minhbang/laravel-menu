@@ -24,6 +24,7 @@ class CreateMenusTable extends Migration
                 $table->integer('depth')->nullable();
 
                 // Normal columns
+                $table->string('name', 100);
                 $table->string('label', 100);
                 $table->string('type', 100);
                 $table->text('params');
