@@ -70,6 +70,7 @@ class Menu
      * Render html theo format boostrap navbar
      *
      * @param \Minhbang\LaravelMenu\MenuItem|string $root
+     *
      * @return string|null
      */
     public function html($root = 'main')
@@ -89,8 +90,10 @@ class Menu
      * Render html theo định dạng của jquery nestable plugin
      *
      * @see https://github.com/dbushell/Nestable
+     *
      * @param \Minhbang\LaravelMenu\MenuItem $root
      * @param int $max_depth
+     *
      * @return string
      */
     public function nestable($root, $max_depth)
@@ -102,6 +105,7 @@ class Menu
      * Kiểm tra $uri active
      *
      * @param string $uri
+     *
      * @return bool
      */
     public function isActive($uri)
@@ -129,6 +133,7 @@ class Menu
     /**
      * @param string $type
      * @param string $params
+     *
      * @return string
      */
     public function getUrl($type, $params)
@@ -136,8 +141,21 @@ class Menu
         return $this->factory->buildUrl($type, $params);
     }
 
+
     /**
      * @param string $type
+     * @param mixed $default
+     *
+     * @return string
+     */
+    public function getTypeName($type, $default = null)
+    {
+        return isset($this->types[$type]) ? $this->types[$type] : $default;
+    }
+
+    /**
+     * @param string $type
+     *
      * @return bool
      */
     public function hasType($type)
@@ -147,6 +165,7 @@ class Menu
 
     /**
      * @param string $menu
+     *
      * @return bool
      */
     public function hasMenu($menu)
@@ -156,6 +175,7 @@ class Menu
 
     /**
      * @param string $menu
+     *
      * @return \Minhbang\LaravelMenu\MenuItem|null
      */
     public function getMenuRoot($menu = 'main')

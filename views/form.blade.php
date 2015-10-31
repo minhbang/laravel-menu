@@ -43,5 +43,14 @@
             @endif
         </div>
     </div>
+    <div class="form-group{{ $errors->has('options') ? ' has-error':'' }}">
+        {!! Form::label('options', trans('menu::common.options'), ['class' => 'col-xs-3 control-label']) !!}
+        <div class="col-xs-9">
+            {!! Form::text('options', null, ['class' => 'form-control']) !!}
+            @if($errors->has('options'))
+                <p class="help-block">{{ $errors->first('options') }}</p>
+            @endif
+        </div>
+    </div>
     {!! Form::close() !!}
 @stop

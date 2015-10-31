@@ -22,6 +22,10 @@
             <td><strong>{!!$menu->present()->params!!}</strong></td>
         </tr>
         <tr>
+            <td>{{ trans('menu::common.options') }}</td>
+            <td><strong>{!!$menu->present()->options!!}</strong></td>
+        </tr>
+        <tr>
             <td>{{ trans('menu::common.url') }}</td>
             <td class="text-danger"><strong>{{ $menu->url }}</strong></td>
         </tr>

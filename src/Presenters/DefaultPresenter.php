@@ -13,6 +13,7 @@ class DefaultPresenter extends Presenter
      */
     public function html($menu)
     {
+        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelMenu\MenuItem[] $items */
         $items = $menu->getImmediateDescendants();
         if (empty($items)) {
             return '';
@@ -47,7 +48,7 @@ class DefaultPresenter extends Presenter
     protected function htmlItem($item, $max_depth, $tag, $item_tag, $item_attributes, $depth = 1)
     {
         if ($item->isLeaf() || $depth == $max_depth) {
-            $attributes = $item_attributes;
+            $attributes = mb_array_merge($item_attributes, $item->getOption('attributes', []));
             if (app('menu')->isActive($item->url)) {
                 $this->addClass($attributes, 'active');
             }

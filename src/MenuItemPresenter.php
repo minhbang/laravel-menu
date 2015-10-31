@@ -32,16 +32,25 @@ class MenuItemPresenter extends Presenter
      */
     public function params()
     {
-        return '<span class="label label-default">' . $this->entity->params . '</label>';
+        return "<code>{$this->entity->params}</code>";
+    }
+
+    /**
+     * @return string
+     */
+    public function options()
+    {
+        return "<code>{$this->entity->options}</code>";
     }
 
     /**
      * @param int $max_depth
+     *
      * @return string
      */
     public function actions($max_depth)
     {
-        if($this->entity->depth < $max_depth) {
+        if ($this->entity->depth < $max_depth) {
             $child = '<a href="' . url("backend/menu/{$this->entity->id}/create") . '"
                class="modal-link btn btn-primary btn-xs"
                data-toggle="tooltip"

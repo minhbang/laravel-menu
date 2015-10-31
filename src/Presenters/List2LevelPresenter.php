@@ -9,10 +9,12 @@ class List2LevelPresenter extends Presenter
      * Render menu dạng list 2 cấp (ex: dạng footer menu)
      *
      * @param \Minhbang\LaravelMenu\MenuItem $menu root node
+     *
      * @return string|null html menu
      */
     public function html($menu)
     {
+        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelMenu\MenuItem[] $items */
         $items = $menu->getImmediateDescendants(); // cấp 1
         if (empty($items)) {
             return '';
@@ -24,16 +26,17 @@ class List2LevelPresenter extends Presenter
             foreach ($items as $item) {
                 if (!$item->isLeaf()) {
                     $is_active_item = false;
+                    /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelMenu\MenuItem[] $sub_items */
                     $sub_items = $item->getImmediateDescendants(); // cấp 2
                     $item_html = "<h5>{$item->label}</h5><ul>";
                     foreach ($sub_items as $sub_item) {
+                        $attributes = Html::attributes($sub_item->getOption('attributes', []));
                         if (app('menu')->isActive($sub_item->url)) {
-                            $active = ' class="active"';
+                            $this->addClass($attributes, 'active');
                             $is_active_item = true;
-                        } else {
-                            $active = '';
                         }
-                        $item_html .= "<li{$active}><a href=\"{$sub_item->url}\">{$sub_item->label}</a></li>";
+                        $attributes = Html::attributes($attributes);
+                        $item_html .= "<li{$attributes}><a href=\"{$sub_item->url}\">{$sub_item->label}</a></li>";
                     }
                     $item_html .= "</ul>";
 
@@ -47,7 +50,7 @@ class List2LevelPresenter extends Presenter
 
                         }
                     } else {
-                        $attributes = $item_attributes;
+                        $attributes = mb_array_merge($item_attributes, $item->getOption('attributes', []));
                         if ($is_active_item) {
                             $this->addClass($attributes, 'active');
                         }

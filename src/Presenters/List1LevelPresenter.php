@@ -9,10 +9,12 @@ class List1LevelPresenter extends Presenter
      * Render menu dạng list 1 cấp
      *
      * @param \Minhbang\LaravelMenu\MenuItem $menu root node
+     *
      * @return string|null html menu
      */
     public function html($menu)
     {
+        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelMenu\MenuItem[] $items */
         $items = $menu->getImmediateDescendants();
         if (empty($items)) {
             return '';
@@ -22,7 +24,7 @@ class List1LevelPresenter extends Presenter
 
             $html = '';
             foreach ($items as $item) {
-                $attributes = $item_attributes;
+                $attributes = mb_array_merge($item_attributes, $item->getOption('attributes', []));
                 if (app('menu')->isActive($item->url)) {
                     $this->addClass($attributes, 'active');
                 }

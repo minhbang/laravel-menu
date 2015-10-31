@@ -7,6 +7,7 @@ return [
     'label'          => 'Nhãn',
     'type'           => 'Loại menu',
     'params'         => 'Tham số',
+    'options'        => 'Thuộc tính',
     'url'            => 'URL',
     'item'           => 'Mục Menu',
     'create_item'    => 'Thêm mục Menu',
