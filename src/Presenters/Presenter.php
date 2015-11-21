@@ -1,5 +1,5 @@
 <?php
-namespace Minhbang\LaravelMenu\Presenters;
+namespace Minhbang\Menu\Presenters;
 
 class Presenter
 {

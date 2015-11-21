@@ -1,14 +1,14 @@
 <?php
-namespace Minhbang\LaravelMenu;
+namespace Minhbang\Menu;
 
 use Route;
 
 /**
- * Class MenuFactory
+ * Class Factory
  *
- * @package Minhbang\LaravelMenu
+ * @package Minhbang\Menu
  */
-class MenuFactory
+class Factory
 {
     /**
      * Get menu list, [id => options]

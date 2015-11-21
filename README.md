@@ -20,7 +20,7 @@ $ composer update
 
 * **Thêm vào file config/app.php => 'providers'**
 ```php
-	Minhbang\LaravelMenu\MenuServiceProvider::class,
+	Minhbang\Menu\ServiceProvider::class,
 ```
 
 * **Publish config và database migrations**

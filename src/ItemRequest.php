@@ -1,9 +1,9 @@
 <?php
-namespace Minhbang\LaravelMenu;
+namespace Minhbang\Menu;
 
 use Minhbang\LaravelKit\Extensions\Request;
 
-class MenuItemRequest extends Request
+class ItemRequest extends Request
 {
     public $trans_prefix = 'menu::common';
     public $rules = [

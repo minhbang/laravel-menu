@@ -1,5 +1,5 @@
 <?php
-namespace Minhbang\LaravelMenu\Presenters;
+namespace Minhbang\Menu\Presenters;
 
 use Html;
 
@@ -8,12 +8,12 @@ class DefaultPresenter extends Presenter
     /**
      * Render menu dạng dropdown đa cấp
      *
-     * @param \Minhbang\LaravelMenu\MenuItem $menu root node
+     * @param \Minhbang\Menu\Item $menu root node
      * @return string|null html menu
      */
     public function html($menu)
     {
-        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelMenu\MenuItem[] $items */
+        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Item[] $items */
         $items = $menu->getImmediateDescendants();
         if (empty($items)) {
             return '';
@@ -37,7 +37,7 @@ class DefaultPresenter extends Presenter
     }
 
     /**
-     * @param \Minhbang\LaravelMenu\MenuItem $item
+     * @param \Minhbang\Menu\Item $item
      * @param integer $max_depth
      * @param string $tag
      * @param string $item_tag

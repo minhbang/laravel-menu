@@ -1,9 +1,14 @@
 <?php
-namespace Minhbang\LaravelMenu;
+namespace Minhbang\Menu;
 
-use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Facade as BaseFacade;
 
-class MenuFacade extends Facade
+/**
+ * Class Facade
+ *
+ * @package Minhbang\Menu
+ */
+class Facade extends BaseFacade
 {
     /**
      * Get the registered name of the component.

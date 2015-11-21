@@ -1,5 +1,5 @@
 <?php
-namespace Minhbang\LaravelMenu\Presenters;
+namespace Minhbang\Menu\Presenters;
 
 use Html;
 
@@ -8,13 +8,13 @@ class List2LevelPresenter extends Presenter
     /**
      * Render menu dạng list 2 cấp (ex: dạng footer menu)
      *
-     * @param \Minhbang\LaravelMenu\MenuItem $menu root node
+     * @param \Minhbang\Menu\Item $menu root node
      *
      * @return string|null html menu
      */
     public function html($menu)
     {
-        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelMenu\MenuItem[] $items */
+        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Item[] $items */
         $items = $menu->getImmediateDescendants(); // cấp 1
         if (empty($items)) {
             return '';
@@ -26,7 +26,7 @@ class List2LevelPresenter extends Presenter
             foreach ($items as $item) {
                 if (!$item->isLeaf()) {
                     $is_active_item = false;
-                    /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelMenu\MenuItem[] $sub_items */
+                    /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Item[] $sub_items */
                     $sub_items = $item->getImmediateDescendants(); // cấp 2
                     $item_html = "<h5>{$item->label}</h5><ul>";
                     foreach ($sub_items as $sub_item) {

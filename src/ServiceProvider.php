@@ -1,17 +1,23 @@
 <?php
 
-namespace Minhbang\LaravelMenu;
+namespace Minhbang\Menu;
 
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\AliasLoader;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
-class MenuServiceProvider extends ServiceProvider
+/**
+ * Class ServiceProvider
+ *
+ * @package Minhbang\Menu
+ */
+class ServiceProvider extends BaseServiceProvider
 {
     /**
      * Perform post-registration booting of services.
      *
      * @param \Illuminate\Routing\Router $router
+     *
      * @return void
      */
     public function boot(Router $router)
@@ -35,7 +41,7 @@ class MenuServiceProvider extends ServiceProvider
         // pattern filters
         $router->pattern('menu', '[0-9]+');
         // model bindings
-        $router->model('menu', 'Minhbang\LaravelMenu\MenuItem');
+        $router->model('menu', 'Minhbang\Menu\Item');
     }
 
     /**
@@ -47,19 +53,16 @@ class MenuServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
         $this->app['menu'] = $this->app->share(
-            function ($app) {
+            function () {
                 $factory = config('menu.factory');
-                return new Menu(
-                    config('menu.actives'),
-                    new $factory(),
-                    config('menu.presenters')
+                return new Menu(config('menu.actives'), new $factory(), config('menu.presenters')
                 );
             }
         );
         // add Setting alias
         $this->app->booting(
-            function ($app) {
-                AliasLoader::getInstance()->alias('Menu', MenuFacade::class);
+            function () {
+                AliasLoader::getInstance()->alias('Menu', Facade::class);
             }
         );
     }

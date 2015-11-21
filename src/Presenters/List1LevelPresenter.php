@@ -1,5 +1,5 @@
 <?php
-namespace Minhbang\LaravelMenu\Presenters;
+namespace Minhbang\Menu\Presenters;
 
 use Html;
 
@@ -8,13 +8,13 @@ class List1LevelPresenter extends Presenter
     /**
      * Render menu dạng list 1 cấp
      *
-     * @param \Minhbang\LaravelMenu\MenuItem $menu root node
+     * @param \Minhbang\Menu\Item $menu root node
      *
      * @return string|null html menu
      */
     public function html($menu)
     {
-        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelMenu\MenuItem[] $items */
+        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Item[] $items */
         $items = $menu->getImmediateDescendants();
         if (empty($items)) {
             return '';

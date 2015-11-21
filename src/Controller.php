@@ -1,15 +1,15 @@
 <?php
-namespace Minhbang\LaravelMenu;
+namespace Minhbang\Menu;
 
 use Minhbang\LaravelKit\Extensions\BackendController;
 use Request;
 
-class MenuController extends BackendController
+class Controller extends BackendController
 {
     /**
      * Node gốc dùng phân loại menu
      *
-     * @var \Minhbang\LaravelMenu\MenuItem
+     * @var \Minhbang\Menu\Item
      */
     protected $menuRoot;
     /**
@@ -61,16 +61,16 @@ class MenuController extends BackendController
     /**
      * Show the form for creating a new resource.
      *
-     * @param \Minhbang\LaravelMenu\MenuItem $menu
+     * @param \Minhbang\Menu\Item $menu
      * @return \Illuminate\View\View
      */
-    public function createChildOf(MenuItem $menu)
+    public function createChildOf(Item $menu)
     {
         return $this->_create($menu);
     }
 
     /**
-     * @param null|\Minhbang\LaravelMenu\MenuItem $parent
+     * @param null|\Minhbang\Menu\Item $parent
      * @return \Illuminate\View\View
      */
     protected function _create($parent = null)
@@ -82,7 +82,7 @@ class MenuController extends BackendController
             $parent_label = '- ROOT -';
             $url = route('backend.menu.store');
         }
-        $menu = new MenuItem();
+        $menu = new Item();
         $method = 'post';
         $types = $this->menuManager->types;
         return view(
@@ -95,10 +95,10 @@ class MenuController extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\LaravelMenu\MenuItemRequest $request
+     * @param \Minhbang\Menu\ItemRequest $request
      * @return \Illuminate\View\View
      */
-    public function store(MenuItemRequest $request)
+    public function store(ItemRequest $request)
     {
         return $this->_store($request);
     }
@@ -106,11 +106,11 @@ class MenuController extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\LaravelMenu\MenuItemRequest $request
-     * @param \Minhbang\LaravelMenu\MenuItem $menu
+     * @param \Minhbang\Menu\ItemRequest $request
+     * @param \Minhbang\Menu\Item $menu
      * @return \Illuminate\View\View
      */
-    public function storeChildOf(MenuItemRequest $request, MenuItem $menu)
+    public function storeChildOf(ItemRequest $request, Item $menu)
     {
         return $this->_store($request, $menu);
     }
@@ -118,13 +118,13 @@ class MenuController extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\LaravelMenu\MenuItemRequest $request
-     * @param null|\Minhbang\LaravelMenu\MenuItem $parent
+     * @param \Minhbang\Menu\ItemRequest $request
+     * @param null|\Minhbang\Menu\Item $parent
      * @return \Illuminate\View\View
      */
     public function _store($request, $parent = null)
     {
-        $menu = new MenuItem();
+        $menu = new Item();
         $inputs = $request->all();
         $menu->fill($inputs);
         $menu->save();
@@ -148,10 +148,10 @@ class MenuController extends BackendController
     /**
      * Display the specified resource.
      *
-     * @param \Minhbang\LaravelMenu\MenuItem $menu
+     * @param \Minhbang\Menu\Item $menu
      * @return \Illuminate\View\View
      */
-    public function show(MenuItem $menu)
+    public function show(Item $menu)
     {
         return view('menu::show', compact('menu'));
     }
@@ -159,10 +159,10 @@ class MenuController extends BackendController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \Minhbang\LaravelMenu\MenuItem $menu
+     * @param \Minhbang\Menu\Item $menu
      * @return \Illuminate\View\View
      */
-    public function edit(MenuItem $menu)
+    public function edit(Item $menu)
     {
         $parent_label = $menu->isRoot() ? '- ROOT -' : $menu->parent->label;
         $url = route('backend.menu.update', ['menu' => $menu->id]);
@@ -174,11 +174,11 @@ class MenuController extends BackendController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Minhbang\LaravelMenu\MenuItemRequest $request
-     * @param \Minhbang\LaravelMenu\MenuItem $menu
+     * @param \Minhbang\Menu\ItemRequest $request
+     * @param \Minhbang\Menu\Item $menu
      * @return \Illuminate\View\View
      */
-    public function update(MenuItemRequest $request, MenuItem $menu)
+    public function update(ItemRequest $request, Item $menu)
     {
         $inputs = $request->all();
         $menu->fill($inputs);
@@ -198,11 +198,11 @@ class MenuController extends BackendController
     /**
      * Remove the specified resource from storage.
      *
-     * @param \Minhbang\LaravelMenu\MenuItem $menu
+     * @param \Minhbang\Menu\Item $menu
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function destroy(MenuItem $menu)
+    public function destroy(Item $menu)
     {
         $menu->delete();
         return response()->json(
@@ -255,13 +255,13 @@ class MenuController extends BackendController
 
     /**
      * @param string $name
-     * @return null|\Minhbang\LaravelMenu\MenuItem
+     * @return null|\Minhbang\Menu\Item
      */
     protected function getNode($name)
     {
         $id = Request::input($name);
         if ($id) {
-            if ($node = MenuItem::find($id)) {
+            if ($node = Item::find($id)) {
                 return $node;
             } else {
                 $this->dieAjax();

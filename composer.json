@@ -26,12 +26,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Minhbang\\LaravelMenu\\": "src/"
+            "Minhbang\\Menu\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Minhbang\\LaravelMenu\\Test\\": "tests/"
+            "Minhbang\\Menu\\Test\\": "tests/"
         }
     }
 }

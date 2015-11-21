@@ -1,14 +1,14 @@
 <?php
-namespace Minhbang\LaravelMenu;
+namespace Minhbang\Menu;
 
 use Laracasts\Presenter\Presenter;
 
 /**
- * Class MenuPresenter
+ * Class ItemPresenter
  *
- * @package Minhbang\LaravelMenu
+ * @package Minhbang\Menu
  */
-class MenuItemPresenter extends Presenter
+class ItemPresenter extends Presenter
 {
     /**
      * @return string

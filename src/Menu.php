@@ -1,5 +1,5 @@
 <?php
-namespace Minhbang\LaravelMenu;
+namespace Minhbang\Menu;
 
 use Request;
 use Minhbang\LaravelKit\Traits\Presenter\NestablePresenter;
@@ -7,7 +7,7 @@ use Minhbang\LaravelKit\Traits\Presenter\NestablePresenter;
 /**
  * Class Menu
  *
- * @package Minhbang\LaravelMenu
+ * @package Minhbang\Menu
  */
 class Menu
 {
@@ -18,7 +18,7 @@ class Menu
     protected $actives = [];
 
     /**
-     * @var \Minhbang\LaravelMenu\MenuFactory
+     * @var \Minhbang\Menu\Factory
      */
     protected $factory;
 
@@ -49,7 +49,7 @@ class Menu
 
     /**
      * @param array $actives
-     * @param \Minhbang\LaravelMenu\MenuFactory $factory
+     * @param \Minhbang\Menu\Factory $factory
      * @param array $presenters
      */
     function __construct($actives, $factory, $presenters)
@@ -69,14 +69,14 @@ class Menu
     /**
      * Render html theo format boostrap navbar
      *
-     * @param \Minhbang\LaravelMenu\MenuItem|string $root
+     * @param \Minhbang\Menu\Item|string $root
      *
      * @return string|null
      */
     public function html($root = 'main')
     {
         if (is_string($root)) {
-            $root = MenuItem::where('name', $root)->first();
+            $root = Item::where('name', $root)->first();
         }
         if ($root) {
             $presenter = $root->getOption('presenter', 'default');
@@ -91,7 +91,7 @@ class Menu
      *
      * @see https://github.com/dbushell/Nestable
      *
-     * @param \Minhbang\LaravelMenu\MenuItem $root
+     * @param \Minhbang\Menu\Item $root
      * @param int $max_depth
      *
      * @return string
@@ -176,15 +176,15 @@ class Menu
     /**
      * @param string $menu
      *
-     * @return \Minhbang\LaravelMenu\MenuItem|null
+     * @return \Minhbang\Menu\Item|null
      */
     public function getMenuRoot($menu = 'main')
     {
         if ($this->hasMenu($menu)) {
-            if ($root = MenuItem::where('type', 'menu')->where('name', $menu)->first()) {
+            if ($root = Item::where('type', 'menu')->where('name', $menu)->first()) {
                 return $root;
             }
-            return MenuItem::create(
+            return Item::create(
                 [
                     'name'    => $menu,
                     'label'   => $menu,
