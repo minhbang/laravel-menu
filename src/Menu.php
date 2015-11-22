@@ -2,7 +2,6 @@
 namespace Minhbang\Menu;
 
 use Request;
-use Minhbang\LaravelKit\Traits\Presenter\NestablePresenter;
 
 /**
  * Class Menu
@@ -11,94 +10,65 @@ use Minhbang\LaravelKit\Traits\Presenter\NestablePresenter;
  */
 class Menu
 {
-    use NestablePresenter;
     /**
      * @var array
      */
     protected $actives = [];
 
     /**
-     * @var \Minhbang\Menu\Factory
-     */
-    protected $factory;
-
-    /**
+     * Danh sách menu presenter classes
+     *
      * @var array
      */
     protected $presenters = [];
+
     /**
      * Menu types list
      *
      * @var array
      */
-    public $types;
+    protected $types;
+    /**
+     * @var array
+     */
+    protected $cached_types = [];
 
     /**
-     * Danh sách menu
+     * @var array
+     */
+    protected $settings;
+
+    /**
+     * Cached Menu manager instance
      *
      * @var  array
      */
-    public $lists;
+    protected $lists = [];
 
     /**
-     * Danh sách menu label
+     * Danh sách menu display names
      *
      * @var  array
      */
-    public $labels = [];
+    protected $titles = [];
 
     /**
+     * Menu constructor.
+     *
      * @param array $actives
-     * @param \Minhbang\Menu\Factory $factory
      * @param array $presenters
+     * @param array $types
+     * @param array $settings
      */
-    function __construct($actives, $factory, $presenters)
+    public function __construct($actives = [], $presenters = [], $types = [], $settings = [])
     {
         $this->actives = $actives;
-        $this->factory = $factory;
-        $this->types = $factory->getTypes();
-        $this->lists = $factory->getLists();
-        foreach ($this->lists as $menu => $options) {
-            $this->labels[$menu] = trans("menu::common.{$menu}");
+        $this->presenters = $presenters;
+        $this->types = $types;
+        $this->settings = $settings;
+        foreach ($this->settings as $menu => $setting) {
+            $this->titles[$menu] = trans("menu::common.{$menu}");
         }
-        foreach ($presenters as $name => $class_name) {
-            $this->presenters[$name] = new $class_name();
-        }
-    }
-
-    /**
-     * Render html theo format boostrap navbar
-     *
-     * @param \Minhbang\Menu\Item|string $root
-     *
-     * @return string|null
-     */
-    public function html($root = 'main')
-    {
-        if (is_string($root)) {
-            $root = Item::where('name', $root)->first();
-        }
-        if ($root) {
-            $presenter = $root->getOption('presenter', 'default');
-            return $this->presenters[$presenter]->html($root);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Render html theo định dạng của jquery nestable plugin
-     *
-     * @see https://github.com/dbushell/Nestable
-     *
-     * @param \Minhbang\Menu\Item $root
-     * @param int $max_depth
-     *
-     * @return string
-     */
-    public function nestable($root, $max_depth)
-    {
-        return $this->toNestable($root->getImmediateDescendants(), $max_depth);
     }
 
     /**
@@ -136,65 +106,125 @@ class Menu
      *
      * @return string
      */
-    public function getUrl($type, $params)
+    public function buildUrl($type, $params)
     {
-        return $this->factory->buildUrl($type, $params);
+        return $this->getType($type)->url($params);
     }
 
+    /**
+     * Get menu manager instance
+     *
+     * @param string $name
+     *
+     * @return \Minhbang\Menu\Manager
+     */
+    public function get($name)
+    {
+        if (!isset($this->settings[$name])) {
+            abort(500, 'Invalid Menu name!');
+        }
+        if (!isset($this->lists[$name])) {
+
+            $this->lists[$name] = new Manager(
+                $name,
+                $this->newObject($this->settings[$name]['presenter'], $this->presenters, 'Presenter'),
+                $this->getOptions($name)
+            );
+        }
+        return $this->lists[$name];
+    }
 
     /**
-     * @param string $type
-     * @param mixed $default
+     * @param $name
      *
      * @return string
      */
-    public function getTypeName($type, $default = null)
+    public function render($name)
     {
-        return isset($this->types[$type]) ? $this->types[$type] : $default;
+        return $this->get($name)->html();
     }
 
     /**
-     * @param string $type
+     * Danh sách tên menu
      *
-     * @return bool
-     */
-    public function hasType($type)
-    {
-        return isset($this->types[$type]);
-    }
-
-    /**
-     * @param string $menu
+     * @param null|string $name
+     * @param mixed $default
      *
-     * @return bool
+     * @return array|mixed
      */
-    public function hasMenu($menu)
+    public function titles($name = null, $default = null)
     {
-        return isset($this->lists[$menu]);
-    }
-
-    /**
-     * @param string $menu
-     *
-     * @return \Minhbang\Menu\Item|null
-     */
-    public function getMenuRoot($menu = 'main')
-    {
-        if ($this->hasMenu($menu)) {
-            if ($root = Item::where('type', 'menu')->where('name', $menu)->first()) {
-                return $root;
-            }
-            return Item::create(
-                [
-                    'name'    => $menu,
-                    'label'   => $menu,
-                    'type'    => 'menu',
-                    'params'  => '#',
-                    'options' => $this->lists[$menu],
-                ]
-            );
+        if ($name) {
+            return isset($this->titles[$name]) ? $this->titles[$name] : $default;
         } else {
-            return null;
+            return $this->titles;
+        }
+    }
+
+    /**
+     * Danh sách tên các loại menu
+     */
+    public function types()
+    {
+        $lists = [];
+        foreach ($this->types as $type => $class) {
+            $lists[$type] = $this->getType($type)->title();
+        }
+        return $lists;
+    }
+
+    /**
+     * Danh sách tên params của các loại menu
+     */
+    public function typeParams()
+    {
+        $lists = [];
+        foreach ($this->types as $type => $class) {
+            $lists[$type] = $this->getType($type)->titleParams();
+        }
+        return $lists;
+    }
+
+    /**
+     * @param $name
+     *
+     * @return \Minhbang\Menu\Contracts\Type
+     */
+    protected function getType($name)
+    {
+        if (!isset($this->cached_types[$name])) {
+            $this->cached_types[$name] = $this->newObject($name, $this->types, 'Type');
+        }
+        return $this->cached_types[$name];
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    protected function getOptions($name)
+    {
+        if ($options = array_get($this->settings, "{$name}.options")) {
+            return $options;
+        } else {
+            abort(500, "Can't get menu setting!");
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param arrray $lists
+     * @param string $title
+     *
+     * @return \Minhbang\Menu\Contracts\Type|\Minhbang\Menu\Contracts\Presenter
+     */
+    protected function newObject($name, $lists, $title)
+    {
+        if (isset($lists[$name])) {
+            return new $lists[$name]();
+        } else {
+            abort(500, "Invalid Menu {$title} name!");
         }
     }
 }

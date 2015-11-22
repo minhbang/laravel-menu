@@ -1,24 +1,27 @@
 <?php
 namespace Minhbang\Menu\Presenters;
 
+use Minhbang\Menu\Contracts\Presenter;
 use Html;
 
-class List1LevelPresenter extends Presenter
+/**
+ * Class List1
+ *
+ * @package Minhbang\Menu\Presenters
+ */
+class List1 extends Base implements Presenter
 {
     /**
      * Render menu dạng list 1 cấp
      *
-     * @param \Minhbang\Menu\Item $menu root node
+     * @param \Minhbang\Menu\Manager $manager
      *
-     * @return string|null html menu
+     * @return string
      */
-    public function html($menu)
+    public function html($manager)
     {
-        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Item[] $items */
-        $items = $menu->getImmediateDescendants();
-        if (empty($items)) {
-            return '';
-        } else {
+        if ($items = $manager->level1_items()) {
+            $menu = $manager->root();
             $item_tag = $menu->getOption('item_tag');
             $item_attributes = $menu->getOption('item_attributes', []);
 
@@ -30,7 +33,7 @@ class List1LevelPresenter extends Presenter
                 }
                 $attributes = Html::attributes($attributes);
                 if (empty($item_tag)) {
-                    $html .= "<a href=\"{$item->url}\"{$attributes}>{$item->label}</a>";
+                    $html .= "<a href=\"{$item->url}\" {$attributes}>{$item->label}</a>";
                 } else {
                     $html .= "<{$item_tag}{$attributes}><a href=\"{$item->url}\">{$item->label}</a></{$item_tag}>";
                 }
@@ -43,6 +46,8 @@ class List1LevelPresenter extends Presenter
             }
 
             return $html;
+        } else {
+            return '';
         }
     }
 }

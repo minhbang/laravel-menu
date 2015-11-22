@@ -1,23 +1,27 @@
 <?php
 namespace Minhbang\Menu\Presenters;
 
+use Minhbang\Menu\Contracts\Presenter;
 use Html;
 
-class DefaultPresenter extends Presenter
+/**
+ * Class Main
+ *
+ * @package Minhbang\Menu\Presenters
+ */
+class Main extends Base implements Presenter
 {
     /**
      * Render menu dạng dropdown đa cấp
      *
-     * @param \Minhbang\Menu\Item $menu root node
-     * @return string|null html menu
+     * @param \Minhbang\Menu\Manager $manager
+     *
+     * @return string
      */
-    public function html($menu)
+    public function html($manager)
     {
-        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Item[] $items */
-        $items = $menu->getImmediateDescendants();
-        if (empty($items)) {
-            return '';
-        } else {
+        if ($items = $manager->level1_items()) {
+            $menu = $manager->root();
             $max_depth = $menu->getOption('max_depth', config('menu.default_max_depth'));
             $tag = $menu->getOption('tag', 'ul');
 
@@ -33,6 +37,8 @@ class DefaultPresenter extends Presenter
             $html = "<{$tag}{$attributes}>$html</{$tag}>";
 
             return $html;
+        } else {
+            return '';
         }
     }
 
@@ -43,6 +49,7 @@ class DefaultPresenter extends Presenter
      * @param string $item_tag
      * @param array $item_attributes
      * @param integer $depth
+     *
      * @return string
      */
     protected function htmlItem($item, $max_depth, $tag, $item_tag, $item_attributes, $depth = 1)

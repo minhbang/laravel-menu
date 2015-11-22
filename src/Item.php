@@ -2,7 +2,7 @@
 namespace Minhbang\Menu;
 
 use Laracasts\Presenter\PresentableTrait;
-use Baum\Node;
+use Minhbang\LaravelKit\Extensions\NestedSetModel;
 
 /**
  * App\Item
@@ -33,7 +33,7 @@ use Baum\Node;
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutRoot()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node limitDepth($limit)
  */
-class Item extends Node
+class Item extends NestedSetModel
 {
     use PresentableTrait;
     protected $table = 'menus';
@@ -69,15 +69,6 @@ class Item extends Node
      */
     public function getUrlAttribute()
     {
-        return app('menu')->getUrl($this->type, $this->params);
-    }
-
-    /**
-     * @return string
-     * @throws \Laracasts\Presenter\Exceptions\PresenterException
-     */
-    public static function html()
-    {
-        return (new static())->present()->html;
+        return app('menu')->buildUrl($this->type, $this->params);
     }
 }

@@ -1,6 +1,5 @@
 <?php
 return [
-    'factory'            => Minhbang\Menu\Factory::class,
     /**
      * $patterns của các URI khi check active
      * Ví dụ: '/a/b' sẽ active khi truy cập /c/d*, /c/f*...
@@ -13,9 +12,54 @@ return [
     'add_route'         => true,
     'default_max_depth' => 2,
     'middlewares'       => 'admin',
+    // Danh sách menu presenters
     'presenters'        => [
-        'default' => Minhbang\Menu\Presenters\DefaultPresenter::class,
-        'list1'   => Minhbang\Menu\Presenters\List1LevelPresenter::class,
-        'list2'   => Minhbang\Menu\Presenters\List2LevelPresenter::class,
+        'main'  => Minhbang\Menu\Presenters\Main::class,
+        'list1' => Minhbang\Menu\Presenters\List1::class,
+        'list2' => Minhbang\Menu\Presenters\List2::class,
+    ],
+    // Danh sách menu item types
+    'types'             => [
+        'url'   => Minhbang\Menu\Types\Url::class,
+        'route' => Minhbang\Menu\Types\Route::class,
+    ],
+    /**
+     * Cấu hình danh sách Menus
+     */
+    'settings'          => [
+        'top'    => [
+            'presenter' => 'list1',
+            'options'   => [
+                "max_depth"  => 1,
+                "tag"        => "ul",
+                "item_tag"   => "li",
+                "attributes" => ["class" => "nav navbar-nav pull-left"],
+            ],
+        ],
+        'main'   => [
+            'presenter' => 'main',
+            'options'   => [
+                "max_depth"  => 2,
+                "attributes" => ["class" => "nav navbar-nav"],
+            ],
+        ],
+        'footer' => [
+            'presenter' => 'list2',
+            'options'   => [
+                "max_depth"       => 2,
+                "tag"             => "",
+                "item_tag"        => "div",
+                "item_attributes" => ["class" => "col-md-2 col-sm-6"],
+            ],
+        ],
+        'bottom' => [
+            'presenter' => 'list1',
+            'options'   => [
+                "max_depth"  => 1,
+                "tag"        => "ul",
+                "item_tag"   => "li",
+                "attributes" => ["class" => "pull-right list-inline"],
+            ],
+        ],
     ],
 ];

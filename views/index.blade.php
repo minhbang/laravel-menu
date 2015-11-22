@@ -29,7 +29,7 @@
                     <ul class="nav nav-tabs tabs-right">
                     @foreach($menus as $menu => $label)
                         <li{!! $current ==$menu ? ' class="active"':'' !!}>
-                            <a href="{{route('backend.menu.root', ['root' =>$menu])}}">{{$label}}</a>
+                            <a href="{{route('backend.menu.name', ['name' =>$menu])}}">{{$label}}</a>
                         </li>
                     @endforeach
                     </ul>

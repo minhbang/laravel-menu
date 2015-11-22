@@ -54,8 +54,11 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
         $this->app['menu'] = $this->app->share(
             function () {
-                $factory = config('menu.factory');
-                return new Menu(config('menu.actives'), new $factory(), config('menu.presenters')
+                return new Menu(
+                    config('menu.actives'),
+                    config('menu.presenters'),
+                    config('menu.types'),
+                    config('menu.settings')
                 );
             }
         );

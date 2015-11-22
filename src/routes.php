@@ -11,7 +11,7 @@ Route::group(
                 Route::post('{menu}', ['as' => 'storeChildOf', 'uses' => 'Controller@storeChildOf']);
             }
         );
-        Route::get('menu/for/{root}', ['as' => 'backend.menu.root', 'uses' => 'Controller@index']);
+        Route::get('menu/for/{name}', ['as' => 'backend.menu.name', 'uses' => 'Controller@index']);
         Route::resource('menu', 'Controller');
     }
 );

@@ -7,42 +7,62 @@ use Request;
 class Controller extends BackendController
 {
     /**
-     * Node gốc dùng phân loại menu
+     * Quản lý current menu
+     *
+     * @var \Minhbang\Menu\Manager
+     */
+    protected $manager;
+    /**
+     * Current menu root
      *
      * @var \Minhbang\Menu\Item
      */
-    protected $menuRoot;
+    protected $root;
     /**
-     * @var \Menu;
+     * Current menu name
+     *
+     * @var string
      */
-    protected $menuManager;
+    protected $name;
 
     public function __construct()
     {
         parent::__construct(config('menu.middlewares'));
-        $this->menuManager = app('menu');
-        $this->switchMenuRoot();
+        $this->switchMenu();
     }
 
     /**
-     * @param string|null $root
+     * @param null|string $name
+     */
+    protected function switchMenu($name = null)
+    {
+        $key = 'backend.menu.name';
+        $name = $name ?: session($key, 'main');
+        session([$key => $name]);
+        $this->manager = app('menu')->get($name);
+        $this->root = $this->manager->root();
+        $this->name = $name;
+    }
+
+
+    /**
+     * @param string|null $name
+     *
      * @return \Illuminate\View\View
      */
-    public function index($root = null)
+    public function index($name = null)
     {
-        if ($root) {
-            $this->switchMenuRoot($root);
-        }
-        $max_depth = $this->menuRoot->getOption('max_depth', config('menu.default_max_depth'));
-        $nestable = $this->menuManager->nestable($this->menuRoot, $max_depth);
-        $menus = $this->menuManager->labels;
-        $current = $this->menuRoot->name;
+        $this->switchMenu($name);
+        $max_depth = $this->manager->max_depth;
+        $nestable = $this->manager->nestable();
+        $menus = $this->manager->titles();
+        $current = $this->name;
         $this->buildHeading(
             [trans('menu::common.manage'), "[{$menus[$current]}]"],
             'fa-sitemap',
             [
                 route('backend.setting.list') => trans('backend.config'),
-                '#'                           => trans('menu::common.menu')
+                '#'                           => trans('menu::common.menu'),
             ]
         );
         return view('menu::index', compact('max_depth', 'nestable', 'menus', 'current'));
@@ -62,6 +82,7 @@ class Controller extends BackendController
      * Show the form for creating a new resource.
      *
      * @param \Minhbang\Menu\Item $menu
+     *
      * @return \Illuminate\View\View
      */
     public function createChildOf(Item $menu)
@@ -71,6 +92,7 @@ class Controller extends BackendController
 
     /**
      * @param null|\Minhbang\Menu\Item $parent
+     *
      * @return \Illuminate\View\View
      */
     protected function _create($parent = null)
@@ -84,7 +106,7 @@ class Controller extends BackendController
         }
         $menu = new Item();
         $method = 'post';
-        $types = $this->menuManager->types;
+        $types = $this->manager->types();
         return view(
             'menu::form',
             compact('parent_label', 'url', 'method', 'menu', 'types')
@@ -96,6 +118,7 @@ class Controller extends BackendController
      * Store a newly created resource in storage.
      *
      * @param \Minhbang\Menu\ItemRequest $request
+     *
      * @return \Illuminate\View\View
      */
     public function store(ItemRequest $request)
@@ -108,6 +131,7 @@ class Controller extends BackendController
      *
      * @param \Minhbang\Menu\ItemRequest $request
      * @param \Minhbang\Menu\Item $menu
+     *
      * @return \Illuminate\View\View
      */
     public function storeChildOf(ItemRequest $request, Item $menu)
@@ -120,6 +144,7 @@ class Controller extends BackendController
      *
      * @param \Minhbang\Menu\ItemRequest $request
      * @param null|\Minhbang\Menu\Item $parent
+     *
      * @return \Illuminate\View\View
      */
     public function _store($request, $parent = null)
@@ -128,17 +153,13 @@ class Controller extends BackendController
         $inputs = $request->all();
         $menu->fill($inputs);
         $menu->save();
-        if ($parent) {
-            $menu->makeChildOf($parent);
-        } else {
-            $menu->makeChildOf($this->menuRoot);
-        }
+        $menu->makeChildOf($parent ?: $this->root);
         return view(
             '_modal_script',
             [
                 'message'    => [
                     'type'    => 'success',
-                    'content' => trans('common.create_object_success', ['name' => trans('menu::common.item')])
+                    'content' => trans('common.create_object_success', ['name' => trans('menu::common.item')]),
                 ],
                 'reloadPage' => true,
             ]
@@ -149,6 +170,7 @@ class Controller extends BackendController
      * Display the specified resource.
      *
      * @param \Minhbang\Menu\Item $menu
+     *
      * @return \Illuminate\View\View
      */
     public function show(Item $menu)
@@ -160,14 +182,16 @@ class Controller extends BackendController
      * Show the form for editing the specified resource.
      *
      * @param \Minhbang\Menu\Item $menu
+     *
      * @return \Illuminate\View\View
      */
     public function edit(Item $menu)
     {
-        $parent_label = $menu->isRoot() ? '- ROOT -' : $menu->parent->label;
+        $parent = $menu->parent;
+        $parent_label = $parent->isRoot() ? '- ROOT -' : $parent->label;
         $url = route('backend.menu.update', ['menu' => $menu->id]);
         $method = 'put';
-        $types = $this->menuManager->types;
+        $types = $this->manager->types();
         return view('menu::form', compact('parent_label', 'url', 'method', 'menu', 'types'));
     }
 
@@ -176,6 +200,7 @@ class Controller extends BackendController
      *
      * @param \Minhbang\Menu\ItemRequest $request
      * @param \Minhbang\Menu\Item $menu
+     *
      * @return \Illuminate\View\View
      */
     public function update(ItemRequest $request, Item $menu)
@@ -188,7 +213,7 @@ class Controller extends BackendController
             [
                 'message'    => [
                     'type'    => 'success',
-                    'content' => trans('common.update_object_success', ['name' => trans('menu::common.item')])
+                    'content' => trans('common.update_object_success', ['name' => trans('menu::common.item')]),
                 ],
                 'reloadPage' => true,
             ]
@@ -199,6 +224,7 @@ class Controller extends BackendController
      * Remove the specified resource from storage.
      *
      * @param \Minhbang\Menu\Item $menu
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
@@ -219,8 +245,7 @@ class Controller extends BackendController
      */
     public function data()
     {
-        $max_depth = $this->menuRoot->getOption('max_depth', config('menu.default_max_depth'));
-        return response()->json(['html' => $this->menuManager->nestable($this->menuRoot, $max_depth)]);
+        return response()->json(['html' => $this->manager->nestable()]);
     }
 
     /**
@@ -249,12 +274,13 @@ class Controller extends BackendController
                 ]
             );
         } else {
-            $this->dieAjax();
+            return $this->dieAjax();
         }
     }
 
     /**
      * @param string $name
+     *
      * @return null|\Minhbang\Menu\Item
      */
     protected function getNode($name)
@@ -264,7 +290,7 @@ class Controller extends BackendController
             if ($node = Item::find($id)) {
                 return $node;
             } else {
-                $this->dieAjax();
+                return $this->dieAjax();
             }
         } else {
             return null;
@@ -273,31 +299,16 @@ class Controller extends BackendController
 
     /**
      * Kết thúc App, trả về message dạng JSON
+     *
+     * @return mixed
      */
     protected function dieAjax()
     {
-        die(json_encode(
+        return die(json_encode(
             [
                 'type'    => 'error',
-                'content' => trans('menu::common.not_found')
+                'content' => trans('menu::common.not_found'),
             ]
         ));
-    }
-
-    /**
-     * Chuyển menu hiện tại,
-     * 404 khi $menu root chưa được khai báo
-     *
-     * @param string|null $menu
-     */
-    protected function switchMenuRoot($menu = null)
-    {
-        $menu = $menu ?: session('MenuResource_menu', 'main');
-        if ($this->menuRoot = $this->menuManager->getMenuRoot($menu)) {
-            session(['MenuResource_menu' => $menu]);
-        } else {
-            session(['MenuResource_menu' => null]);
-            abort(404);
-        }
     }
 }

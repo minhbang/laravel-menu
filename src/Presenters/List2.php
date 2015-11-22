@@ -1,24 +1,27 @@
 <?php
 namespace Minhbang\Menu\Presenters;
 
+use Minhbang\Menu\Contracts\Presenter;
 use Html;
 
-class List2LevelPresenter extends Presenter
+/**
+ * Class List2
+ *
+ * @package Minhbang\Menu\Presenters
+ */
+class List2 extends Base implements Presenter
 {
     /**
      * Render menu dạng list 2 cấp (ex: dạng footer menu)
      *
-     * @param \Minhbang\Menu\Item $menu root node
+     * @param \Minhbang\Menu\Manager $manager
      *
-     * @return string|null html menu
+     * @return string
      */
-    public function html($menu)
+    public function html($manager)
     {
-        /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Item[] $items */
-        $items = $menu->getImmediateDescendants(); // cấp 1
-        if (empty($items)) {
-            return '';
-        } else {
+        if ($items = $manager->level1_items()) {
+            $menu = $manager->root();
             $item_tag = $menu->getOption('item_tag');
             $item_attributes = $menu->getOption('item_attributes', []);
 
@@ -69,6 +72,8 @@ class List2LevelPresenter extends Presenter
             }
 
             return $html;
+        } else {
+            return '';
         }
     }
 }
