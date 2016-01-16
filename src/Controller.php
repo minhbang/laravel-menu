@@ -25,9 +25,11 @@ class Controller extends BackendController
      */
     protected $name;
 
+    /**
+     * Controller constructor.
+     */
     public function __construct()
     {
-        parent::__construct(config('menu.middlewares'));
         $this->switchMenu();
     }
 

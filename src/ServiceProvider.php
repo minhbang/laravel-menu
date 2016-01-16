@@ -31,7 +31,7 @@ class ServiceProvider extends BaseServiceProvider
                 __DIR__ . '/../config/menu.php'            => config_path('menu.php'),
                 __DIR__ . '/../database/migrations/' .
                 '2015_03_21_155451_create_menus_table.php' =>
-                    database_path('migrations/' . '2015_03_21_155451_create_menus_table.php'),
+                    database_path('migrations/2015_03_21_155451_create_menus_table.php'),
             ]
         );
 

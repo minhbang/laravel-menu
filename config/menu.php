@@ -27,38 +27,29 @@ return [
      * Cấu hình danh sách Menus
      */
     'settings'          => [
-        'top'    => [
-            'presenter' => 'list1',
-            'options'   => [
-                "max_depth"  => 1,
-                "tag"        => "ul",
-                "item_tag"   => "li",
-                "attributes" => ["class" => "nav navbar-nav pull-left"],
-            ],
-        ],
         'main'   => [
             'presenter' => 'main',
             'options'   => [
-                "max_depth"  => 2,
-                "attributes" => ["class" => "nav navbar-nav"],
+                'max_depth'  => 5,
+                'attributes' => ['class' => 'nav navbar-nav'],
             ],
         ],
         'footer' => [
             'presenter' => 'list2',
             'options'   => [
-                "max_depth"       => 2,
-                "tag"             => "",
-                "item_tag"        => "div",
-                "item_attributes" => ["class" => "col-md-2 col-sm-6"],
+                'max_depth'       => 2,
+                'tag'             => '',
+                'item_tag'        => 'div',
+                'item_attributes' => ['class' => 'col-md-2 col-sm-6'],
             ],
         ],
         'bottom' => [
             'presenter' => 'list1',
             'options'   => [
-                "max_depth"  => 1,
-                "tag"        => "ul",
-                "item_tag"   => "li",
-                "attributes" => ["class" => "pull-right list-inline"],
+                'max_depth'  => 1,
+                'tag'        => 'ul',
+                'item_tag'   => 'li',
+                'attributes' => ['class' => 'pull-right list-inline'],
             ],
         ],
     ],
