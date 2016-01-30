@@ -1,7 +1,7 @@
 <?php
 namespace Minhbang\Menu;
 
-use Minhbang\LaravelKit\Traits\Presenter\NestablePresenter;
+use Minhbang\Kit\Traits\Presenter\NestablePresenter;
 
 /**
  * Class Manager

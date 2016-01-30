@@ -11,7 +11,7 @@ return [
     'actives'           => [],
     'add_route'         => true,
     'default_max_depth' => 2,
-    'middlewares'       => 'admin',
+    'middleware'        => 'role:admin',
     // Danh sách menu presenters
     'presenters'        => [
         'main'  => Minhbang\Menu\Presenters\Main::class,

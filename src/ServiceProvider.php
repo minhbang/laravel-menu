@@ -26,13 +26,17 @@ class ServiceProvider extends BaseServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../views', 'menu');
         $this->publishes(
             [
-                __DIR__ . '/../views'                      => base_path('resources/views/vendor/menu'),
-                __DIR__ . '/../lang'                       => base_path('resources/lang/vendor/menu'),
-                __DIR__ . '/../config/menu.php'            => config_path('menu.php'),
-                __DIR__ . '/../database/migrations/' .
-                '2015_03_21_155451_create_menus_table.php' =>
-                    database_path('migrations/2015_03_21_155451_create_menus_table.php'),
+                __DIR__ . '/../views'           => base_path('resources/views/vendor/menu'),
+                __DIR__ . '/../lang'            => base_path('resources/lang/vendor/menu'),
+                __DIR__ . '/../config/menu.php' => config_path('menu.php'),
             ]
+        );
+        $this->publishes(
+            [
+                __DIR__ . '/../database/migrations/2015_03_21_155451_create_menus_table.php' =>
+                    database_path('migrations/2015_03_21_155451_create_menus_table.php'),
+            ],
+            'db'
         );
 
         if (config('menu.add_route') && !$this->app->routesAreCached()) {

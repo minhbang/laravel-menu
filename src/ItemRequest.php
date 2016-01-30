@@ -1,7 +1,7 @@
 <?php
 namespace Minhbang\Menu;
 
-use Minhbang\LaravelKit\Extensions\Request;
+use Minhbang\Kit\Extensions\Request;
 
 class ItemRequest extends Request
 {

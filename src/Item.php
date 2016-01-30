@@ -2,7 +2,7 @@
 namespace Minhbang\Menu;
 
 use Laracasts\Presenter\PresentableTrait;
-use Minhbang\LaravelKit\Extensions\NestedSetModel;
+use Minhbang\Kit\Extensions\NestedSetModel;
 
 /**
  * App\Item

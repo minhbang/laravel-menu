@@ -1,7 +1,7 @@
 <?php
 namespace Minhbang\Menu;
 
-use Minhbang\LaravelKit\Extensions\BackendController;
+use Minhbang\Kit\Extensions\BackendController;
 use Request;
 
 class Controller extends BackendController
@@ -30,6 +30,7 @@ class Controller extends BackendController
      */
     public function __construct()
     {
+        parent::__construct();
         $this->switchMenu();
     }
 
