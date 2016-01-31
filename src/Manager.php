@@ -18,10 +18,7 @@ class Manager
      * @var \Minhbang\Menu\Item
      */
     protected $root;
-    /**
-     * @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Item[]
-     */
-    protected $level1_items;
+
     /**
      * @var \Minhbang\Menu\Contracts\Presenter
      */
@@ -49,17 +46,6 @@ class Manager
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Item[]
-     */
-    public function level1_items()
-    {
-        if (is_null($this->level1_items)) {
-            $this->level1_items = $this->root->getImmediateDescendants();
-        }
-        return $this->level1_items;
-    }
-
-    /**
      * Render html theo định dạng của jquery nestable plugin
      *
      * @see https://github.com/dbushell/Nestable
@@ -67,7 +53,7 @@ class Manager
      */
     public function nestable()
     {
-        return $this->toNestable($this->level1_items(), $this->max_depth);
+        return $this->toNestable($this->root()->getImmediateDescendants(), $this->max_depth);
     }
 
     /**

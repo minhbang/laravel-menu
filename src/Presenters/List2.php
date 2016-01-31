@@ -3,6 +3,7 @@ namespace Minhbang\Menu\Presenters;
 
 use Minhbang\Menu\Contracts\Presenter;
 use Html;
+use Menu;
 
 /**
  * Class List2
@@ -20,50 +21,42 @@ class List2 extends Base implements Presenter
      */
     public function html($manager)
     {
-        if ($items = $manager->level1_items()) {
-            $menu = $manager->root();
-            $item_tag = $menu->getOption('item_tag');
+        $menu = $manager->root();
+        /** @var \Minhbang\Menu\Item[]|\Illuminate\Support\Collection $items */
+        $items = $menu->descendants()->where('depth', '<=', 2)->get();
+        if ($items->count()) {
+            $item_tag = $menu->getOption('item_tag', 'li');
             $item_attributes = $menu->getOption('item_attributes', []);
-
             $html = '';
+            $current_item_html = '';
+            $current_item_attributes = [];
+            $is_active_item = false;
             foreach ($items as $item) {
-                if (!$item->isLeaf()) {
-                    $is_active_item = false;
-                    /** @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Item[] $sub_items */
-                    $sub_items = $item->getImmediateDescendants(); // cấp 2
-                    $item_html = "<h5>{$item->label}</h5><ul>";
-                    foreach ($sub_items as $sub_item) {
-                        $attributes = Html::attributes($sub_item->getOption('attributes', []));
-                        if (app('menu')->isActive($sub_item->url)) {
-                            $this->addClass($attributes, 'active');
-                            $is_active_item = true;
-                        }
-                        $attributes = Html::attributes($attributes);
-                        $item_html .= "<li{$attributes}><a href=\"{$sub_item->url}\">{$sub_item->label}</a></li>";
-                    }
-                    $item_html .= "</ul>";
-
-                    if (empty($item_tag)) {
-                        if ($is_active_item) {
-                            $item_html = str_replace(
-                                ['<h5>', '<ul>'],
-                                ['<h5 class="active">', '<ul class="active">'],
-                                $item_html
-                            );
-
-                        }
+                if ($item->depth == 1) {
+                    // Kết thức 'group' trước
+                    $html .= $this->endGroupItem($item_tag, $current_item_html, $current_item_attributes, $is_active_item);
+                    if ($item->rgt - $item->lft > 1) {
+                        // Nếu node level 1 có các mục menu con, start 'group' mới
+                        $current_item_html = "<h5>{$item->label}</h5><ul>";
+                        $current_item_attributes = mb_array_merge($item_attributes, $item->getOption('attributes', []));
                     } else {
-                        $attributes = mb_array_merge($item_attributes, $item->getOption('attributes', []));
-                        if ($is_active_item) {
-                            $this->addClass($attributes, 'active');
-                        }
-                        $attributes = Html::attributes($attributes);
-                        $item_html = "<{$item_tag}{$attributes}>{$item_html}</{$item_tag}>";
+                        // bỏ qua node này, reset
+                        $current_item_html = '';
+                        $current_item_attributes = [];
                     }
+                    $is_active_item = false;
+                } else {
+                    $attributes = Html::attributes($item->getOption('attributes', []));
+                    if (Menu::isActive($item->url)) {
+                        $this->addClass($attributes, 'active');
+                        $is_active_item = true;
+                    }
+                    $attributes = Html::attributes($attributes);
 
-                    $html .= $item_html;
+                    $current_item_html .= "<li{$attributes}><a href=\"{$item->url}\">{$item->label}</a></li>";
                 }
             }
+            $html .= $this->endGroupItem($item_tag, $current_item_html, $current_item_attributes, $is_active_item);
 
             $tag = $menu->getOption('tag');
             if (!empty($tag)) {
@@ -75,5 +68,34 @@ class List2 extends Base implements Presenter
         } else {
             return '';
         }
+    }
+
+    /**
+     * @param string $tag
+     * @param string $html
+     * @param array $attributes
+     * @param bool $is_active
+     *
+     * @return string
+     */
+    protected function endGroupItem($tag, $html, $attributes, $is_active)
+    {
+        if (empty($html)) {
+            return '';
+        }
+        $html .= "</ul>";
+        if (empty($tag)) {
+            if ($is_active) {
+                $html = str_replace(['<h5>', '<ul>'], ['<h5 class="active">', '<ul class="active">'], $html);
+            }
+        } else {
+            if ($is_active) {
+                $this->addClass($attributes, 'active');
+            }
+            $attributes = Html::attributes($attributes);
+            $html = "<{$tag}{$attributes}>{$html}</{$tag}>";
+        }
+
+        return $html;
     }
 }

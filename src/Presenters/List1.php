@@ -20,11 +20,10 @@ class List1 extends Base implements Presenter
      */
     public function html($manager)
     {
-        if ($items = $manager->level1_items()) {
-            $menu = $manager->root();
+        $menu = $manager->root();
+        if ($items = $menu->getImmediateDescendants()) {
             $item_tag = $menu->getOption('item_tag');
             $item_attributes = $menu->getOption('item_attributes', []);
-
             $html = '';
             foreach ($items as $item) {
                 $attributes = mb_array_merge($item_attributes, $item->getOption('attributes', []));
