@@ -15,11 +15,11 @@ class Seeder
      * @param string $name
      * @param array $options
      *
-     * @return \Minhbang\Menu\Item
+     * @return \Minhbang\Menu\Menu
      */
     protected function seedMenuRoot($name, $options)
     {
-        return Item::firstOrCreate(
+        return Menu::firstOrCreate(
             ['name' => $name, 'label' => $name],
             ['type' => '#', 'params' => '#', 'options' => json_encode($options)]
         );
@@ -28,11 +28,11 @@ class Seeder
     /**
      * @param string|null $label
      *
-     * @return \Minhbang\Menu\Item
+     * @return \Minhbang\Menu\Menu
      */
     protected function seedMenuItem($label)
     {
-        return Item::create([
+        return Menu::create([
             'name'    => VnString::to_slug($label),
             'label'   => $label,
             'type'    => 'url',
@@ -42,7 +42,7 @@ class Seeder
     }
 
     /**
-     * @param \Minhbang\Menu\Item $root
+     * @param \Minhbang\Menu\Menu $root
      * @param array $items
      */
     protected function seedMenu($root, $items)

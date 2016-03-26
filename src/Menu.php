@@ -1,230 +1,75 @@
 <?php
 namespace Minhbang\Menu;
 
-use Request;
+use Laracasts\Presenter\PresentableTrait;
+use Minhbang\Kit\Extensions\NestedSetModel;
 
 /**
  * Class Menu
  *
  * @package Minhbang\Menu
+ * @property integer $id
+ * @property integer $parent_id
+ * @property integer $lft
+ * @property integer $rgt
+ * @property integer $depth
+ * @property string $name
+ * @property string $label
+ * @property string $type
+ * @property string $params
+ * @property string $options
+ * @property-read mixed $url
+ * @property-read \Minhbang\Menu\Menu $parent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\Menu\Menu[] $children
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Menu\Menu whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Menu\Menu whereParentId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Menu\Menu whereLft($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Menu\Menu whereRgt($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Menu\Menu whereDepth($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Menu\Menu whereLabel($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Menu\Menu whereType($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Menu\Menu whereParams($value)
+ * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutNode($node)
+ * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutSelf()
+ * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutRoot()
+ * @method static \Illuminate\Database\Query\Builder|\Baum\Node limitDepth($limit)
  */
-class Menu
+class Menu extends NestedSetModel
 {
+    use PresentableTrait;
+    protected $table = 'menus';
+    protected $presenter = MenuPresenter::class;
+    protected $fillable = ['name', 'label', 'type', 'params', 'options'];
+    public $timestamps = false;
     /**
      * @var array
      */
-    protected $actives = [];
+    protected $_options;
 
     /**
-     * Danh sách menu presenter classes
-     *
-     * @var array
-     */
-    protected $presenters = [];
-
-    /**
-     * Menu types list
-     *
-     * @var array
-     */
-    protected $types;
-    /**
-     * @var array
-     */
-    protected $cached_types = [];
-
-    /**
-     * @var array
-     */
-    protected $settings;
-
-    /**
-     * Cached Menu manager instance
-     *
-     * @var  array
-     */
-    protected $lists = [];
-
-    /**
-     * Danh sách menu display names
-     *
-     * @var  array
-     */
-    protected $titles = [];
-
-    /**
-     * Menu constructor.
-     *
-     * @param array $actives
-     * @param array $presenters
-     * @param array $types
-     * @param array $settings
-     */
-    public function __construct($actives = [], $presenters = [], $types = [], $settings = [])
-    {
-        $this->actives = $actives;
-        $this->presenters = $presenters;
-        $this->types = $types;
-        $this->settings = $settings;
-        foreach ($this->settings as $menu => $setting) {
-            $this->titles[$menu] = trans("menu::common.{$menu}");
-        }
-    }
-
-    /**
-     * Kiểm tra $uri active
-     *
-     * @param string $uri
-     *
-     * @return bool
-     */
-    public function isActive($uri)
-    {
-        $current = str_replace(url('/'), '', Request::url());
-        if (empty($current)) {
-            $active = $uri === '/';
-        } else {
-            if (isset($this->actives[$uri])) {
-                $patterns = $this->actives[$uri];
-                if (is_string($patterns)) {
-                    $patterns = [$patterns];
-                }
-                foreach ($patterns as $pattern) {
-                    if (str_is($pattern, $current)) {
-                        return true;
-                    }
-                }
-            }
-            $active = $uri !== '/' && str_is("{$uri}*", $current);
-        }
-        return $active;
-    }
-
-    /**
-     * @param string $type
-     * @param string $params
-     *
-     * @return string
-     */
-    public function buildUrl($type, $params)
-    {
-        return $this->getType($type)->url($params);
-    }
-
-    /**
-     * Get menu manager instance
-     *
-     * @param string $name
-     *
-     * @return \Minhbang\Menu\Manager
-     */
-    public function get($name)
-    {
-        if (!isset($this->settings[$name])) {
-            abort(500, 'Invalid Menu name!');
-        }
-        if (!isset($this->lists[$name])) {
-
-            $this->lists[$name] = new Manager(
-                $name,
-                $this->newObject($this->settings[$name]['presenter'], $this->presenters, 'Presenter'),
-                $this->getOptions($name)
-            );
-        }
-        return $this->lists[$name];
-    }
-
-    /**
-     * @param $name
-     *
-     * @return string
-     */
-    public function render($name)
-    {
-        return $this->get($name)->html();
-    }
-
-    /**
-     * Danh sách tên menu
-     *
-     * @param null|string $name
+     * @param null|string $key
      * @param mixed $default
-     *
-     * @return array|mixed
+     * @return mixed;
      */
-    public function titles($name = null, $default = null)
+    public function getOption($key = null, $default = null)
     {
-        if ($name) {
-            return isset($this->titles[$name]) ? $this->titles[$name] : $default;
+        if (empty($this->options)) {
+            return $default;
         } else {
-            return $this->titles;
+            if (is_null($this->_options)) {
+                $this->_options = json_decode($this->options, true);
+            }
+            return is_null($key) ? $this->_options : array_get($this->_options, $key, $default);
         }
     }
 
     /**
-     * Danh sách tên các loại menu
-     */
-    public function types()
-    {
-        $lists = [];
-        foreach ($this->types as $type => $class) {
-            $lists[$type] = $this->getType($type)->title();
-        }
-        return $lists;
-    }
-
-    /**
-     * Danh sách tên params của các loại menu
-     */
-    public function typeParams()
-    {
-        $lists = [];
-        foreach ($this->types as $type => $class) {
-            $lists[$type] = $this->getType($type)->titleParams();
-        }
-        return $lists;
-    }
-
-    /**
-     * @param $name
-     *
-     * @return \Minhbang\Menu\Contracts\Type
-     */
-    protected function getType($name)
-    {
-        if (!isset($this->cached_types[$name])) {
-            $this->cached_types[$name] = $this->newObject($name, $this->types, 'Type');
-        }
-        return $this->cached_types[$name];
-    }
-
-    /**
-     * @param string $name
+     * Getter $menu->url
      *
      * @return string
      */
-    protected function getOptions($name)
+    public function getUrlAttribute()
     {
-        if ($options = array_get($this->settings, "{$name}.options")) {
-            return $options;
-        } else {
-            abort(500, "Can't get menu setting!");
-        }
-    }
-
-    /**
-     * @param string $name
-     * @param arrray $lists
-     * @param string $title
-     *
-     * @return \Minhbang\Menu\Contracts\Type|\Minhbang\Menu\Contracts\Presenter
-     */
-    protected function newObject($name, $lists, $title)
-    {
-        if (isset($lists[$name])) {
-            return new $lists[$name]();
-        } else {
-            abort(500, "Invalid Menu {$title} name!");
-        }
+        return app('menu-manager')->buildUrl($this->type, $this->params);
     }
 }

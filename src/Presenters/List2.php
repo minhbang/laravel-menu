@@ -3,7 +3,7 @@ namespace Minhbang\Menu\Presenters;
 
 use Minhbang\Menu\Contracts\Presenter;
 use Html;
-use Menu;
+use MenuManager;
 
 /**
  * Class List2
@@ -15,14 +15,14 @@ class List2 extends Base implements Presenter
     /**
      * Render menu dạng list 2 cấp (ex: dạng footer menu)
      *
-     * @param \Minhbang\Menu\Manager $manager
+     * @param \Minhbang\Menu\Root $root
      *
      * @return string
      */
-    public function html($manager)
+    public function html($root)
     {
-        $menu = $manager->root();
-        /** @var \Minhbang\Menu\Item[]|\Illuminate\Support\Collection $items */
+        $menu = $root->node();
+        /** @var \Minhbang\Menu\Menu[]|\Illuminate\Support\Collection $items */
         $items = $menu->descendants()->where('depth', '<=', 2)->get();
         if ($items->count()) {
             $item_tag = $menu->getOption('item_tag', 'li');
@@ -47,7 +47,7 @@ class List2 extends Base implements Presenter
                     $is_active_item = false;
                 } else {
                     $attributes = Html::attributes($item->getOption('attributes', []));
-                    if (Menu::isActive($item->url)) {
+                    if (MenuManager::isActive($item->url)) {
                         $this->addClass($attributes, 'active');
                         $is_active_item = true;
                     }

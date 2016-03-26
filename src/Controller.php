@@ -9,13 +9,13 @@ class Controller extends BackendController
     /**
      * Quản lý current menu
      *
-     * @var \Minhbang\Menu\Manager
+     * @var \Minhbang\Menu\Root
      */
     protected $manager;
     /**
      * Current menu root
      *
-     * @var \Minhbang\Menu\Item
+     * @var \Minhbang\Menu\Menu
      */
     protected $root;
     /**
@@ -42,8 +42,8 @@ class Controller extends BackendController
         $key = 'backend.menu.name';
         $name = $name ?: session($key, 'main');
         session([$key => $name]);
-        $this->manager = app('menu')->get($name);
-        $this->root = $this->manager->root();
+        $this->manager = app('menu-manager')->get($name);
+        $this->root = $this->manager->node();
         $this->name = $name;
     }
 
@@ -84,17 +84,17 @@ class Controller extends BackendController
     /**
      * Show the form for creating a new resource.
      *
-     * @param \Minhbang\Menu\Item $menu
+     * @param \Minhbang\Menu\Menu $menu
      *
      * @return \Illuminate\View\View
      */
-    public function createChildOf(Item $menu)
+    public function createChildOf(Menu $menu)
     {
         return $this->_create($menu);
     }
 
     /**
-     * @param null|\Minhbang\Menu\Item $parent
+     * @param null|\Minhbang\Menu\Menu $parent
      *
      * @return \Illuminate\View\View
      */
@@ -107,7 +107,7 @@ class Controller extends BackendController
             $parent_label = '- ROOT -';
             $url = route('backend.menu.store');
         }
-        $menu = new Item();
+        $menu = new Menu();
         $method = 'post';
         $types = $this->manager->types();
         return view(
@@ -120,11 +120,11 @@ class Controller extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\Menu\ItemRequest $request
+     * @param \Minhbang\Menu\MenuRequest $request
      *
      * @return \Illuminate\View\View
      */
-    public function store(ItemRequest $request)
+    public function store(MenuRequest $request)
     {
         return $this->_store($request);
     }
@@ -132,12 +132,12 @@ class Controller extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\Menu\ItemRequest $request
-     * @param \Minhbang\Menu\Item $menu
+     * @param \Minhbang\Menu\MenuRequest $request
+     * @param \Minhbang\Menu\Menu $menu
      *
      * @return \Illuminate\View\View
      */
-    public function storeChildOf(ItemRequest $request, Item $menu)
+    public function storeChildOf(MenuRequest $request, Menu $menu)
     {
         return $this->_store($request, $menu);
     }
@@ -145,14 +145,14 @@ class Controller extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\Menu\ItemRequest $request
-     * @param null|\Minhbang\Menu\Item $parent
+     * @param \Minhbang\Menu\MenuRequest $request
+     * @param null|\Minhbang\Menu\Menu $parent
      *
      * @return \Illuminate\View\View
      */
     public function _store($request, $parent = null)
     {
-        $menu = new Item();
+        $menu = new Menu();
         $inputs = $request->all();
         $menu->fill($inputs);
         $menu->save();
@@ -172,11 +172,11 @@ class Controller extends BackendController
     /**
      * Display the specified resource.
      *
-     * @param \Minhbang\Menu\Item $menu
+     * @param \Minhbang\Menu\Menu $menu
      *
      * @return \Illuminate\View\View
      */
-    public function show(Item $menu)
+    public function show(Menu $menu)
     {
         return view('menu::show', compact('menu'));
     }
@@ -184,11 +184,11 @@ class Controller extends BackendController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \Minhbang\Menu\Item $menu
+     * @param \Minhbang\Menu\Menu $menu
      *
      * @return \Illuminate\View\View
      */
-    public function edit(Item $menu)
+    public function edit(Menu $menu)
     {
         $parent = $menu->parent;
         $parent_label = $parent->isRoot() ? '- ROOT -' : $parent->label;
@@ -201,12 +201,12 @@ class Controller extends BackendController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Minhbang\Menu\ItemRequest $request
-     * @param \Minhbang\Menu\Item $menu
+     * @param \Minhbang\Menu\MenuRequest $request
+     * @param \Minhbang\Menu\Menu $menu
      *
      * @return \Illuminate\View\View
      */
-    public function update(ItemRequest $request, Item $menu)
+    public function update(MenuRequest $request, Menu $menu)
     {
         $inputs = $request->all();
         $menu->fill($inputs);
@@ -226,12 +226,12 @@ class Controller extends BackendController
     /**
      * Remove the specified resource from storage.
      *
-     * @param \Minhbang\Menu\Item $menu
+     * @param \Minhbang\Menu\Menu $menu
      *
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function destroy(Item $menu)
+    public function destroy(Menu $menu)
     {
         $menu->delete();
         return response()->json(
@@ -284,13 +284,13 @@ class Controller extends BackendController
     /**
      * @param string $name
      *
-     * @return null|\Minhbang\Menu\Item
+     * @return null|\Minhbang\Menu\Menu
      */
     protected function getNode($name)
     {
         $id = Request::input($name);
         if ($id) {
-            if ($node = Item::find($id)) {
+            if ($node = Menu::find($id)) {
                 return $node;
             } else {
                 return $this->dieAjax();
