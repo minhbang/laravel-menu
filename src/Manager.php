@@ -53,7 +53,7 @@ class Manager
      */
     public function nestable()
     {
-        return $this->toNestable($this->root()->getImmediateDescendants(), $this->max_depth);
+        return $this->toNestable($this->root, $this->max_depth);
     }
 
     /**
