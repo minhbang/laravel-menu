@@ -1,108 +1,232 @@
 <?php
 namespace Minhbang\Menu;
 
-use Minhbang\Kit\Traits\Presenter\NestablePresenter;
+use Request;
 
 /**
  * Class Manager
- * Quản lý một loại Menu
  *
  * @package Minhbang\Menu
  */
 class Manager
 {
-    use NestablePresenter;
     /**
-     * Menu root node
+     * @var array
+     */
+    protected $actives = [];
+
+    /**
+     * Danh sách menu presenter classes
      *
-     * @var \Minhbang\Menu\Item
+     * @var array
      */
-    protected $root;
+    protected $presenters = [];
 
     /**
-     * @var \Minhbang\Menu\Contracts\Presenter
+     * Menu types list
+     *
+     * @var array
      */
-    protected $presenter;
+    protected $types;
     /**
-     * @var int
+     * @var array
      */
-    public $max_depth;
+    protected $cached_types = [];
 
     /**
-     * Manager constructor.
+     * @var array
+     */
+    protected $settings;
+
+    /**
+     * Cached Menu manager instance
+     *
+     * @var  array
+     */
+    protected $lists = [];
+
+    /**
+     * Danh sách menu display names
+     *
+     * @var  array
+     */
+    protected $titles = [];
+
+    /**
+     * Menu constructor.
+     *
+     * @param array $actives
+     * @param array $presenters
+     * @param array $types
+     * @param array $settings
+     */
+    public function __construct($actives = [], $presenters = [], $types = [], $settings = [])
+    {
+        $this->actives = $actives;
+        $this->presenters = $presenters;
+        $this->types = $types;
+        $this->settings = $settings;
+        foreach ($this->settings as $menu => $setting) {
+            $this->titles[$menu] = trans("menu::common.{$menu}");
+        }
+    }
+
+    /**
+     * Kiểm tra $uri active
+     *
+     * @param string $uri
+     *
+     * @return bool
+     */
+    public function isActive($uri)
+    {
+        $current = str_replace(url('/'), '', Request::url());
+        if (empty($current)) {
+            $active = $uri === '/';
+        } else {
+            if (isset($this->actives[$uri])) {
+                $patterns = $this->actives[$uri];
+                if (is_string($patterns)) {
+                    $patterns = [$patterns];
+                }
+                foreach ($patterns as $pattern) {
+                    if (str_is($pattern, $current)) {
+                        return true;
+                    }
+                }
+            }
+            $active = $uri !== '/' && str_is("{$uri}*", $current);
+        }
+
+        return $active;
+    }
+
+    /**
+     * @param string $type
+     * @param string $params
+     *
+     * @return string
+     */
+    public function buildUrl($type, $params)
+    {
+        return $this->getType($type)->url($params);
+    }
+
+    /**
+     * Get menu manager instance
      *
      * @param string $name
-     * @param string $presenter
-     * @param string $options
-     */
-    function __construct($name, $presenter, $options)
-    {
-        $this->root = Item::firstOrCreate(
-            ['name' => $name, 'label' => $name],
-            ['type' => '#', 'params' => '#', 'options' => json_encode($options)]
-        );
-        $this->max_depth = array_get($options, 'max_depth', config('menu.default_max_depth'));
-        $this->presenter = $presenter;
-    }
-
-    /**
-     * Render html theo định dạng của jquery nestable plugin
      *
-     * @see https://github.com/dbushell/Nestable
-     * @return string
+     * @return \Minhbang\Menu\Root
      */
-    public function nestable()
+    public function get($name)
     {
-        return $this->toNestable($this->root, $this->max_depth);
+        if (!isset($this->settings[$name])) {
+            abort(500, 'Invalid Menu name!');
+        }
+        if (!isset($this->lists[$name])) {
+
+            $this->lists[$name] = new Root(
+                $name,
+                $this->newObject($this->settings[$name]['presenter'], $this->presenters, 'Presenter'),
+                $this->getOptions($name)
+            );
+        }
+
+        return $this->lists[$name];
     }
 
     /**
-     * Render html menu
+     * @param $name
      *
      * @return string
      */
-    public function html()
+    public function render($name)
     {
-        return $this->presenter->html($this);
+        return $this->get($name)->html();
     }
 
     /**
-     * @return array
+     * Danh sách tên menu
+     *
+     * @param null|string $name
+     * @param mixed $default
+     *
+     * @return array|mixed
+     */
+    public function titles($name = null, $default = null)
+    {
+        if ($name) {
+            return isset($this->titles[$name]) ? $this->titles[$name] : $default;
+        } else {
+            return $this->titles;
+        }
+    }
+
+    /**
+     * Danh sách tên các loại menu
      */
     public function types()
     {
-        return app('menu')->types();
+        $lists = [];
+        foreach ($this->types as $type => $class) {
+            $lists[$type] = $this->getType($type)->title();
+        }
+
+        return $lists;
     }
 
     /**
-     * @return array
+     * Danh sách tên params của các loại menu
      */
     public function typeParams()
     {
-        return app('menu')->typeParams();
+        $lists = [];
+        foreach ($this->types as $type => $class) {
+            $lists[$type] = $this->getType($type)->titleParams();
+        }
+
+        return $lists;
     }
 
     /**
-     * @return array
+     * @param $name
+     *
+     * @return \Minhbang\Menu\Contracts\Type
      */
-    public function titles()
+    protected function getType($name)
     {
-        return app('menu')->titles();
+        if (!isset($this->cached_types[$name])) {
+            $this->cached_types[$name] = $this->newObject($name, $this->types, 'Type');
+        }
+
+        return $this->cached_types[$name];
     }
 
     /**
+     * @param string $name
+     *
      * @return string
      */
-    public function title()
+    protected function getOptions($name)
     {
-        return app('menu')->titles($this->root->name);
+        $options = array_get($this->settings, "{$name}.options");
+        abort_unless($options, 500, "Can't get menu setting!");
+
+        return $options;
     }
 
     /**
-     * @return \Minhbang\Menu\Item
+     * @param string $name
+     * @param array $lists
+     * @param string $title
+     *
+     * @return \Minhbang\Menu\Contracts\Type|\Minhbang\Menu\Contracts\Presenter
      */
-    public function root()
+    protected function newObject($name, $lists, $title)
     {
-        return $this->root;
+        abort_unless(isset($lists[$name]), 500, "Invalid Menu {$title} name!");
+
+        return new $lists[$name]();
     }
 }

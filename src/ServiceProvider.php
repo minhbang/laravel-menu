@@ -45,7 +45,7 @@ class ServiceProvider extends BaseServiceProvider
         // pattern filters
         $router->pattern('menu', '[0-9]+');
         // model bindings
-        $router->model('menu', 'Minhbang\Menu\Item');
+        $router->model('menu', Menu::class);
     }
 
     /**
@@ -56,9 +56,9 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
-        $this->app['menu'] = $this->app->share(
+        $this->app['menu-manager'] = $this->app->share(
             function () {
-                return new Menu(
+                return new Manager(
                     config('menu.actives'),
                     config('menu.presenters'),
                     config('menu.types'),
@@ -69,7 +69,7 @@ class ServiceProvider extends BaseServiceProvider
         // add Setting alias
         $this->app->booting(
             function () {
-                AliasLoader::getInstance()->alias('Menu', Facade::class);
+                AliasLoader::getInstance()->alias('MenuManager', Facade::class);
             }
         );
     }
@@ -81,6 +81,6 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function provides()
     {
-        return ['menu'];
+        return ['menu-manager'];
     }
 }

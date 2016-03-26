@@ -4,11 +4,11 @@ namespace Minhbang\Menu;
 use Laracasts\Presenter\Presenter;
 
 /**
- * Class ItemPresenter
+ * Class MenuPresenter
  *
  * @package Minhbang\Menu
  */
-class ItemPresenter extends Presenter
+class MenuPresenter extends Presenter
 {
     /**
      * @return string
@@ -23,7 +23,7 @@ class ItemPresenter extends Presenter
      */
     public function type()
     {
-        $type = app('menu')->getTypeName($this->entity->type);
+        $type = app('menu-manager')->getTypeName($this->entity->type);
         return "<span class=\"label label-info text-uppercase\">$type</label>";
     }
 

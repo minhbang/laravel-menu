@@ -3,7 +3,7 @@ namespace Minhbang\Menu\Presenters;
 
 use Minhbang\Menu\Contracts\Presenter;
 use Html;
-
+use MenuManager;
 /**
  * Class List1
  *
@@ -14,20 +14,20 @@ class List1 extends Base implements Presenter
     /**
      * Render menu dạng list 1 cấp
      *
-     * @param \Minhbang\Menu\Manager $manager
+     * @param \Minhbang\Menu\Root $root
      *
      * @return string
      */
-    public function html($manager)
+    public function html($root)
     {
-        $menu = $manager->root();
+        $menu = $root->node();
         if ($items = $menu->getImmediateDescendants()) {
             $item_tag = $menu->getOption('item_tag');
             $item_attributes = $menu->getOption('item_attributes', []);
             $html = '';
             foreach ($items as $item) {
                 $attributes = mb_array_merge($item_attributes, $item->getOption('attributes', []));
-                if (app('menu')->isActive($item->url)) {
+                if (MenuManager::isActive($item->url)) {
                     $this->addClass($attributes, 'active');
                 }
                 $attributes = Html::attributes($attributes);
