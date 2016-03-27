@@ -2,6 +2,7 @@
 namespace Minhbang\Menu;
 
 use Minhbang\Kit\Traits\Presenter\NestablePresenter;
+use MenuManager;
 
 /**
  * Class Root
@@ -33,14 +34,11 @@ class Root
      *
      * @param string $name
      * @param string $presenter
-     * @param string $options
+     * @param array $options
      */
     function __construct($name, $presenter, $options)
     {
-        $this->node = Menu::firstOrCreate(
-            ['name' => $name, 'label' => $name],
-            ['type' => '#', 'params' => '#', 'options' => json_encode($options)]
-        );
+        $this->node = Menu::findRootByNameOrCreate($name, $options);
         $this->max_depth = array_get($options, 'max_depth', config('menu.default_max_depth'));
         $this->presenter = $presenter;
     }
@@ -71,7 +69,7 @@ class Root
      */
     public function types()
     {
-        return app('menu-manager')->types();
+        return MenuManager::types();
     }
 
     /**
@@ -79,7 +77,7 @@ class Root
      */
     public function typeParams()
     {
-        return app('menu-manager')->typeParams();
+        return MenuManager::typeParams();
     }
 
     /**
@@ -87,7 +85,7 @@ class Root
      */
     public function titles()
     {
-        return app('menu-manager')->titles();
+        return MenuManager::titles();
     }
 
     /**
@@ -95,7 +93,7 @@ class Root
      */
     public function title()
     {
-        return app('menu-manager')->titles($this->node->name);
+        return MenuManager::titles($this->node->name);
     }
 
     /**

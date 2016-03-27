@@ -121,11 +121,8 @@ class Manager
      */
     public function get($name)
     {
-        if (!isset($this->settings[$name])) {
-            abort(500, 'Invalid Menu name!');
-        }
+        abort_unless(isset($this->settings[$name]), 500, 'Invalid Menu name!');
         if (!isset($this->lists[$name])) {
-
             $this->lists[$name] = new Root(
                 $name,
                 $this->newObject($this->settings[$name]['presenter'], $this->presenters, 'Presenter'),
@@ -156,24 +153,25 @@ class Manager
      */
     public function titles($name = null, $default = null)
     {
-        if ($name) {
-            return isset($this->titles[$name]) ? $this->titles[$name] : $default;
-        } else {
-            return $this->titles;
-        }
+        return array_get($this->titles, $name, $default);
     }
 
     /**
-     * Danh sách tên các loại menu
+     * Titles các loại menu
+     *
+     * @param string $type
+     * @param mixed $default
+     *
+     * @return array
      */
-    public function types()
+    public function types($type = null, $default = null)
     {
         $lists = [];
-        foreach ($this->types as $type => $class) {
-            $lists[$type] = $this->getType($type)->title();
+        foreach ($this->types as $t => $class) {
+            $lists[$t] = $this->getType($t)->title();
         }
 
-        return $lists;
+        return array_get($lists, $type, $default);
     }
 
     /**

@@ -3,6 +3,9 @@ namespace Minhbang\Menu;
 
 use Laracasts\Presenter\PresentableTrait;
 use Minhbang\Kit\Extensions\NestedSetModel;
+use Minhbang\Locale\Translatable;
+use LocaleManager;
+use MenuManager;
 
 /**
  * Class Menu
@@ -37,9 +40,14 @@ use Minhbang\Kit\Extensions\NestedSetModel;
 class Menu extends NestedSetModel
 {
     use PresentableTrait;
+    use Translatable {
+        save as traitsave;
+    }
+
     protected $table = 'menus';
     protected $presenter = MenuPresenter::class;
     protected $fillable = ['name', 'label', 'type', 'params', 'options'];
+    protected $translatable = ['label'];
     public $timestamps = false;
     /**
      * @var array
@@ -49,6 +57,7 @@ class Menu extends NestedSetModel
     /**
      * @param null|string $key
      * @param mixed $default
+     *
      * @return mixed;
      */
     public function getOption($key = null, $default = null)
@@ -59,6 +68,7 @@ class Menu extends NestedSetModel
             if (is_null($this->_options)) {
                 $this->_options = json_decode($this->options, true);
             }
+
             return is_null($key) ? $this->_options : array_get($this->_options, $key, $default);
         }
     }
@@ -70,6 +80,62 @@ class Menu extends NestedSetModel
      */
     public function getUrlAttribute()
     {
-        return app('menu-manager')->buildUrl($this->type, $this->params);
+        return MenuManager::buildUrl($this->type, $this->params);
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     *
+     * @return \Minhbang\Menu\Menu
+     */
+    public static function findRootByNameOrCreate($name, $options = [])
+    {
+        $ext_attributes = ['type' => '#', 'params' => '#', 'options' => json_encode($options)];
+        foreach (LocaleManager::all(true) as $locale) {
+            $ext_attributes[$locale] = ['label' => $name];
+        }
+
+        return parent::firstOrCreate(['name' => $name], $ext_attributes);
+    }
+
+    /**
+     * Khắc phục tạm thời lỗi không tương thích Translatable và Baum\Node
+     *
+     * @see https://github.com/dimsav/laravel-translatable/issues/25#issuecomment-47740434
+     *
+     * @param array $options
+     *
+     * @return bool
+     */
+    public function save(array $options = [])
+    {
+        $tempTranslations = $this->translations;
+        if ($this->exists) {
+            if (count($this->getDirty()) > 0) {
+                // If $this->exists and dirty, parent::save() has to return true. If not,
+                // an error has occurred. Therefore we shouldn't save the translations.
+                if (parent::save($options)) {
+                    $this->translations = $tempTranslations;
+
+                    return $this->saveTranslations();
+                }
+
+                return false;
+            } else {
+                // If $this->exists and not dirty, parent::save() skips saving and returns
+                // false. So we have to save the translations
+                $this->translations = $tempTranslations;
+
+                return $this->saveTranslations();
+            }
+        } elseif (parent::save($options)) {
+            // We save the translations only if the instance is saved in the database.
+            $this->translations = $tempTranslations;
+
+            return $this->saveTranslations();
+        }
+
+        return false;
     }
 }

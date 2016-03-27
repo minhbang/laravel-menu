@@ -11,11 +11,13 @@ use Laracasts\Presenter\Presenter;
 class MenuPresenter extends Presenter
 {
     /**
+     * @param string $locale
+     *
      * @return string
      */
-    public function label()
+    public function label($locale = null)
     {
-        return $this->entity->label;
+        return $locale ? $this->entity->{"label:$locale| "} : $this->entity->label;
     }
 
     /**
@@ -23,7 +25,8 @@ class MenuPresenter extends Presenter
      */
     public function type()
     {
-        $type = app('menu-manager')->getTypeName($this->entity->type);
+        $type = \MenuManager::types($this->entity->type);
+
         return "<span class=\"label label-info text-uppercase\">$type</label>";
     }
 
@@ -84,9 +87,10 @@ class MenuPresenter extends Presenter
             data-toggle="tooltip"
             data-title="' . trans('common.delete_object', ['name' => trans('menu::common.item')]) . '"
             data-item_id="' . $this->entity->id . '"
-            data-item_title="' . $this->entity->title . '"
+            data-item_title="' . $this->entity->label . '"
             class="delete_item btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span>
         </a>';
+
         return $child . $show . $edit . $delete;
     }
 }

@@ -3,6 +3,8 @@ namespace Minhbang\Menu;
 
 use Minhbang\Kit\Extensions\BackendController;
 use Request;
+use LocaleManager;
+use MenuManager;
 
 class Controller extends BackendController
 {
@@ -42,7 +44,7 @@ class Controller extends BackendController
         $key = 'backend.menu.name';
         $name = $name ?: session($key, 'main');
         session([$key => $name]);
-        $this->manager = app('menu-manager')->get($name);
+        $this->manager = MenuManager::get($name);
         $this->root = $this->manager->node();
         $this->name = $name;
     }
@@ -68,6 +70,7 @@ class Controller extends BackendController
                 '#'                           => trans('menu::common.menu'),
             ]
         );
+
         return view('menu::index', compact('max_depth', 'nestable', 'menus', 'current'));
     }
 
@@ -110,9 +113,10 @@ class Controller extends BackendController
         $menu = new Menu();
         $method = 'post';
         $types = $this->manager->types();
+
         return view(
             'menu::form',
-            compact('parent_label', 'url', 'method', 'menu', 'types')
+            compact('parent_label', 'url', 'method', 'menu', 'types') + LocaleManager::compact()
         );
     }
 
@@ -153,10 +157,10 @@ class Controller extends BackendController
     public function _store($request, $parent = null)
     {
         $menu = new Menu();
-        $inputs = $request->all();
-        $menu->fill($inputs);
+        $menu->fill($request->all());
         $menu->save();
         $menu->makeChildOf($parent ?: $this->root);
+
         return view(
             '_modal_script',
             [
@@ -178,7 +182,7 @@ class Controller extends BackendController
      */
     public function show(Menu $menu)
     {
-        return view('menu::show', compact('menu'));
+        return view('menu::show', compact('menu') + LocaleManager::compact());
     }
 
     /**
@@ -195,7 +199,8 @@ class Controller extends BackendController
         $url = route('backend.menu.update', ['menu' => $menu->id]);
         $method = 'put';
         $types = $this->manager->types();
-        return view('menu::form', compact('parent_label', 'url', 'method', 'menu', 'types'));
+
+        return view('menu::form', compact('parent_label', 'url', 'method', 'menu', 'types') + LocaleManager::compact());
     }
 
     /**
@@ -208,9 +213,9 @@ class Controller extends BackendController
      */
     public function update(MenuRequest $request, Menu $menu)
     {
-        $inputs = $request->all();
-        $menu->fill($inputs);
+        $menu->fill($request->all());
         $menu->save();
+
         return view(
             '_modal_script',
             [
@@ -234,6 +239,7 @@ class Controller extends BackendController
     public function destroy(Menu $menu)
     {
         $menu->delete();
+
         return response()->json(
             [
                 'type'    => 'success',
@@ -270,6 +276,7 @@ class Controller extends BackendController
                     }
                 }
             }
+
             return response()->json(
                 [
                     'type'    => 'success',
