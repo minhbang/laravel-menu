@@ -156,24 +156,25 @@ class Manager
      */
     public function titles($name = null, $default = null)
     {
-        if ($name) {
-            return isset($this->titles[$name]) ? $this->titles[$name] : $default;
-        } else {
-            return $this->titles;
-        }
+        return array_get($this->titles, $name, $default);
     }
 
     /**
-     * Danh sách tên các loại menu
+     * Danh sách tên loại menu
+     *
+     * @param null|string $type
+     * @param mixed $default
+     *
+     * @return array|mixed
      */
-    public function types()
+    public function types($type = null, $default = null)
     {
         $lists = [];
         foreach ($this->types as $type => $class) {
             $lists[$type] = $this->getType($type)->title();
         }
 
-        return $lists;
+        return array_get($lists, $type, $default);
     }
 
     /**
