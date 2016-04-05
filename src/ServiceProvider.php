@@ -4,7 +4,7 @@ namespace Minhbang\Menu;
 
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\AliasLoader;
-use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Minhbang\Kit\Extensions\BaseServiceProvider;
 
 /**
  * Class ServiceProvider
@@ -38,10 +38,9 @@ class ServiceProvider extends BaseServiceProvider
             ],
             'db'
         );
-
-        if (config('menu.add_route') && !$this->app->routesAreCached()) {
-            require __DIR__ . '/routes.php';
-        }
+        
+        $this->mapWebRoutes($router, __DIR__ . '/routes.php', config('menu.add_route'));
+        
         // pattern filters
         $router->pattern('menu', '[0-9]+');
         // model bindings
