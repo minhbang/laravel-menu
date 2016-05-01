@@ -33,6 +33,7 @@ use Minhbang\Kit\Extensions\NestedSetModel;
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutSelf()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutRoot()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node limitDepth($limit)
+ * @mixin \Eloquent
  */
 class Menu extends NestedSetModel
 {
@@ -49,6 +50,7 @@ class Menu extends NestedSetModel
     /**
      * @param null|string $key
      * @param mixed $default
+     *
      * @return mixed;
      */
     public function getOption($key = null, $default = null)
@@ -59,6 +61,7 @@ class Menu extends NestedSetModel
             if (is_null($this->_options)) {
                 $this->_options = json_decode($this->options, true);
             }
+
             return is_null($key) ? $this->_options : array_get($this->_options, $key, $default);
         }
     }

@@ -15,11 +15,12 @@ class List2 extends Base implements Presenter
     /**
      * Render menu dạng list 2 cấp (ex: dạng footer menu)
      *
-     * @param \Minhbang\Menu\Root $root
+     * @param \Minhbang\Menu\Roots\EditableRoot $root
+     * @param array $options
      *
      * @return string
      */
-    public function html($root)
+    public function html($root, $options = [])
     {
         $menu = $root->node();
         /** @var \Minhbang\Menu\Menu[]|\Illuminate\Support\Collection $items */

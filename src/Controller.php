@@ -3,13 +3,20 @@ namespace Minhbang\Menu;
 
 use Minhbang\Kit\Extensions\BackendController;
 use Request;
+use MenuManager;
+use Response;
 
+/**
+ * Class Controller
+ *
+ * @package Minhbang\Menu
+ */
 class Controller extends BackendController
 {
     /**
      * Quản lý current menu
      *
-     * @var \Minhbang\Menu\Root
+     * @var \Minhbang\Menu\Roots\EditableRoot
      */
     protected $manager;
     /**
@@ -40,9 +47,10 @@ class Controller extends BackendController
     protected function switchMenu($name = null)
     {
         $key = 'backend.menu.name';
-        $name = $name ?: session($key, 'main');
+        $name = $name ?: session($key, MenuManager::firstEditable());
+        abort_unless(MenuManager::has($name), 500, 'Invalid Menu name!');
         session([$key => $name]);
-        $this->manager = app('menu-manager')->get($name);
+        $this->manager = MenuManager::get($name);
         $this->root = $this->manager->node();
         $this->name = $name;
     }
@@ -60,14 +68,16 @@ class Controller extends BackendController
         $nestable = $this->manager->nestable();
         $menus = $this->manager->titles();
         $current = $this->name;
+
         $this->buildHeading(
-            [trans('menu::common.manage'), "[{$menus[$current]}]"],
+            [trans('menu::common.manage'), array_get($menus, $current)],
             'fa-sitemap',
             [
                 route('backend.setting.list') => trans('backend.config'),
                 '#'                           => trans('menu::common.menu'),
             ]
         );
+
         return view('menu::index', compact('max_depth', 'nestable', 'menus', 'current'));
     }
 
@@ -110,6 +120,7 @@ class Controller extends BackendController
         $menu = new Menu();
         $method = 'post';
         $types = $this->manager->types();
+
         return view(
             'menu::form',
             compact('parent_label', 'url', 'method', 'menu', 'types')
@@ -157,6 +168,7 @@ class Controller extends BackendController
         $menu->fill($inputs);
         $menu->save();
         $menu->makeChildOf($parent ?: $this->root);
+
         return view(
             '_modal_script',
             [
@@ -195,6 +207,7 @@ class Controller extends BackendController
         $url = route('backend.menu.update', ['menu' => $menu->id]);
         $method = 'put';
         $types = $this->manager->types();
+
         return view('menu::form', compact('parent_label', 'url', 'method', 'menu', 'types'));
     }
 
@@ -211,6 +224,7 @@ class Controller extends BackendController
         $inputs = $request->all();
         $menu->fill($inputs);
         $menu->save();
+
         return view(
             '_modal_script',
             [
@@ -234,7 +248,8 @@ class Controller extends BackendController
     public function destroy(Menu $menu)
     {
         $menu->delete();
-        return response()->json(
+
+        return Response::json(
             [
                 'type'    => 'success',
                 'content' => trans('common.delete_object_success', ['name' => trans('menu::common.menu')]),
@@ -248,7 +263,7 @@ class Controller extends BackendController
      */
     public function data()
     {
-        return response()->json(['html' => $this->manager->nestable()]);
+        return Response::json(['html' => $this->manager->nestable()]);
     }
 
     /**
@@ -270,7 +285,8 @@ class Controller extends BackendController
                     }
                 }
             }
-            return response()->json(
+
+            return Response::json(
                 [
                     'type'    => 'success',
                     'content' => trans('common.order_object_success', ['name' => trans('menu::common.item')]),

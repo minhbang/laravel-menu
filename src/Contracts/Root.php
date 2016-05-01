@@ -1,19 +1,23 @@
 <?php
 namespace Minhbang\Menu\Contracts;
 /**
- * Interface Presenter
+ * Interface Root
  *
  * @package Minhbang\Menu\Contracts
  */
-interface Presenter
+interface Root
 {
     /**
      * Render menu HTML theo menu $options
      *
-     * @param \Minhbang\Menu\Contracts\Root $root
      * @param array $options
      *
      * @return string
      */
-    public function html($root, $options = []);
+    public function html($options = []);
+
+    /**
+     * @return bool
+     */
+    public function isEditable();
 }

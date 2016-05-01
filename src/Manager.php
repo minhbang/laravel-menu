@@ -1,7 +1,9 @@
 <?php
 namespace Minhbang\Menu;
 
+use Minhbang\Menu\Roots\UneditableRoot;
 use Request;
+use Minhbang\Menu\Roots\EditableRoot;
 
 /**
  * Class Manager
@@ -39,9 +41,9 @@ class Manager
     protected $settings;
 
     /**
-     * Cached Menu manager instance
+     * Danh sách Root của các menus
      *
-     * @var  array
+     * @var \Minhbang\Menu\Roots\EditableRoot[]
      */
     protected $lists = [];
 
@@ -51,6 +53,10 @@ class Manager
      * @var  array
      */
     protected $titles = [];
+    /**
+     * @var string
+     */
+    protected $first_editable;
 
     /**
      * Menu constructor.
@@ -66,8 +72,88 @@ class Manager
         $this->presenters = $presenters;
         $this->types = $types;
         $this->settings = $settings;
-        foreach ($this->settings as $menu => $setting) {
-            $this->titles[$menu] = trans("menu::common.{$menu}");
+    }
+
+    /**
+     * @param array $data
+     */
+    public function registerMenus($data)
+    {
+        $data = $data + ['zones' => [], 'presenters' => [], 'types' => [], 'menus' => []];
+        foreach ($data['zones'] as $name => $settings) {
+            $this->addZone($name, $settings);
+        }
+        foreach ($data['presenters'] as $name => $presenter) {
+            $this->addPresenter($name, $presenter);
+        }
+        foreach ($data['types'] as $name => $type) {
+            $this->addType($name, $type);
+        }
+        foreach ($data['menus'] as $name => $data) {
+            $this->addItem($name, $data);
+        }
+    }
+
+    /**
+     * @param array $items
+     */
+    public function addItems($items)
+    {
+        if (is_array($items)) {
+            foreach ($items as $name => $data) {
+                $this->addItem($name, $data);
+            }
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param array $data
+     */
+    public function addItem($name, $data)
+    {
+        $segments = explode('.', $name);
+        if (count($segments) > 2) {
+            $zone = array_shift($segments);
+            $menu = $zone . '.' . array_shift($segments);
+            if (!$this->get($menu)->isEditable()) {
+                $this->get($menu)->addItem($segments, $data);
+            }
+        }
+    }
+
+    /**
+     * Thêm một menu zone
+     *
+     * @param string $name
+     * @param array $settings
+     */
+    public function addZone($name, $settings)
+    {
+        if ($name && $settings) {
+            $this->settings[$name] = $settings;
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param string $presenter
+     */
+    public function addPresenter($name, $presenter)
+    {
+        if ($name && $presenter) {
+            $this->presenters[$name] = $presenter;
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param string $type
+     */
+    public function addType($name, $type)
+    {
+        if ($name && $type) {
+            $this->types[$name] = $type;
         }
     }
 
@@ -113,24 +199,19 @@ class Manager
     }
 
     /**
-     * Get menu manager instance
-     *
      * @param string $name
      *
-     * @return \Minhbang\Menu\Root
+     * @return \Minhbang\Menu\Roots\EditableRoot|\Minhbang\Menu\Roots\UneditableRoot
      */
     public function get($name)
     {
-        if (!isset($this->settings[$name])) {
-            abort(500, 'Invalid Menu name!');
-        }
         if (!isset($this->lists[$name])) {
-
-            $this->lists[$name] = new Root(
-                $name,
-                $this->newObject($this->settings[$name]['presenter'], $this->presenters, 'Presenter'),
-                $this->getOptions($name)
-            );
+            $settings = array_get($this->settings, $name);
+            abort_unless($settings, 500, 'Invalid Menu name!');
+            $presenter = $this->newObject($settings['presenter'], $this->presenters, 'Presenter');
+            $this->lists[$name] = array_get($settings, 'editable') ?
+                new EditableRoot($name, $presenter, $settings) :
+                new UneditableRoot($name, $presenter, $settings);
         }
 
         return $this->lists[$name];
@@ -138,12 +219,13 @@ class Manager
 
     /**
      * @param $name
+     * @param array $options
      *
      * @return string
      */
-    public function render($name)
+    public function render($name, $options = [])
     {
-        return $this->get($name)->html();
+        return $this->has($name) ? $this->get($name)->html($options) : null;
     }
 
     /**
@@ -156,7 +238,39 @@ class Manager
      */
     public function titles($name = null, $default = null)
     {
+        if (empty($this->titles)) {
+            foreach ($this->settings as $zone => $menus) {
+                $this->titles[$zone] = [];
+                foreach ($menus as $menu => $setting) {
+                    if (array_get($setting, 'editable')) {
+                        $this->titles[$zone][$menu] = trans("menu::common.menus.{$menu}");
+                        if (is_null($this->first_editable)) {
+                            $this->first_editable = "{$zone}.{$menu}";
+                        }
+                    }
+                }
+            }
+        }
+
         return array_get($this->titles, $name, $default);
+    }
+
+    /**
+     * @return string
+     */
+    public function firstEditable()
+    {
+        return $this->titles() ? $this->first_editable : null;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function has($name)
+    {
+        return $name && array_get($this->settings, $name);
     }
 
     /**
@@ -202,19 +316,6 @@ class Manager
         }
 
         return $this->cached_types[$name];
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
-    protected function getOptions($name)
-    {
-        $options = array_get($this->settings, "{$name}.options");
-        abort_unless($options, 500, "Can't get menu setting!");
-
-        return $options;
     }
 
     /**

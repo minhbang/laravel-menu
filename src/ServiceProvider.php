@@ -5,6 +5,7 @@ namespace Minhbang\Menu;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\AliasLoader;
 use Minhbang\Kit\Extensions\BaseServiceProvider;
+use MenuManager;
 
 /**
  * Class ServiceProvider
@@ -38,13 +39,16 @@ class ServiceProvider extends BaseServiceProvider
             ],
             'db'
         );
-        
+
         $this->mapWebRoutes($router, __DIR__ . '/routes.php', config('menu.add_route'));
-        
+
         // pattern filters
         $router->pattern('menu', '[0-9]+');
         // model bindings
         $router->model('menu', Menu::class);
+
+        // Add menus
+        MenuManager::addItems(config('menu.menus'));
     }
 
     /**

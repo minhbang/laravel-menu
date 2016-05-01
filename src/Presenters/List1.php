@@ -4,6 +4,7 @@ namespace Minhbang\Menu\Presenters;
 use Minhbang\Menu\Contracts\Presenter;
 use Html;
 use MenuManager;
+
 /**
  * Class List1
  *
@@ -14,11 +15,12 @@ class List1 extends Base implements Presenter
     /**
      * Render menu dạng list 1 cấp
      *
-     * @param \Minhbang\Menu\Root $root
+     * @param \Minhbang\Menu\Roots\EditableRoot $root
+     * @param array $options
      *
      * @return string
      */
-    public function html($root)
+    public function html($root, $options = [])
     {
         $menu = $root->node();
         if ($items = $menu->getImmediateDescendants()) {

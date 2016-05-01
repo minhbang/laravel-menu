@@ -15,9 +15,23 @@ return [
     'delete_confirm' => 'Are you sure you want to delete Menu: {ITEM_NAME}<br><strong>Notice:</trong> All sub Menu will be deleted along!',
     'order_hint'     => 'Drag and drop to change menu position',
     'not_found'      => 'Menu not found.',
-    // Menu lists
-    'top'            => 'Top menu',
-    'main'           => 'Main menu',
-    'footer'         => 'Footer menu',
-    'bottom'         => 'Bottom menu',
+    // Menu titles
+    'zones'          => [
+        'frontend' => 'Frontend',
+        'Backend'  => 'Backend',
+        'my'       => 'User Panel',
+    ],
+    'menus'          => [
+        'top'     => 'Top',
+        'main'    => 'Main',
+        'footer'  => 'Footer',
+        'bottom'  => 'Bottom',
+        'sidebar' => 'Sidebar',
+    ],
+    'items'          => [
+        'content'     => 'Content',
+        'user'        => 'User',
+        'setting'     => 'Setting',
+        'maintenance' => 'Maintenance',
+    ],
 ];

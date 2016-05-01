@@ -28,11 +28,12 @@ class Main extends Base implements Presenter
     /**
      * Render menu dạng dropdown đa cấp
      *
-     * @param \Minhbang\Menu\Root $root
+     * @param \Minhbang\Menu\Roots\EditableRoot $root
+     * @param array $options
      *
      * @return string
      */
-    public function html($root)
+    public function html($root, $options = [])
     {
         $menu = $root->node();
         $max_depth = $menu->getOption('max_depth', config('menu.default_max_depth'));

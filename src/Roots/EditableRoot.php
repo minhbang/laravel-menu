@@ -1,15 +1,18 @@
 <?php
-namespace Minhbang\Menu;
+namespace Minhbang\Menu\Roots;
 
 use Minhbang\Kit\Traits\Presenter\NestablePresenter;
+use MenuManager;
+use Minhbang\Menu\Contracts\Root;
+use Minhbang\Menu\Menu;
 
 /**
- * Class Root
- * Quản lý node gốc của 1 loại Menu
+ * Class EditableRoot
+ * Root của Editable Root: menu lưu DB, chỉnh sửa được trong backend
  *
- * @package Minhbang\Menu
+ * @package Minhbang\Menu\Roots
  */
-class Root
+class EditableRoot implements Root
 {
     use NestablePresenter;
     /**
@@ -29,20 +32,28 @@ class Root
     public $max_depth;
 
     /**
-     * Manager constructor.
+     * EditableRoot constructor.
      *
      * @param string $name
-     * @param string $presenter
-     * @param string $options
+     * @param \Minhbang\Menu\Contracts\Presenter $presenter
+     * @param array $settings
      */
-    function __construct($name, $presenter, $options)
+    public function __construct($name, $presenter, $settings)
     {
         $this->node = Menu::firstOrCreate(
             ['name' => $name, 'label' => $name],
-            ['type' => '#', 'params' => '#', 'options' => json_encode($options)]
+            ['type' => '#', 'params' => '#', 'options' => json_encode(array_get($settings, 'options', []))]
         );
-        $this->max_depth = array_get($options, 'max_depth', config('menu.default_max_depth'));
+        $this->max_depth = array_get($settings, 'options.max_depth', config('menu.default_max_depth'));
         $this->presenter = $presenter;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEditable()
+    {
+        return true;
     }
 
     /**
@@ -59,11 +70,13 @@ class Root
     /**
      * Render html menu
      *
+     * @param array $options
+     *
      * @return string
      */
-    public function html()
+    public function html($options = [])
     {
-        return $this->presenter->html($this);
+        return $this->presenter->html($this, $options);
     }
 
     /**
@@ -71,7 +84,7 @@ class Root
      */
     public function types()
     {
-        return app('menu-manager')->types();
+        return MenuManager::types();
     }
 
     /**
@@ -79,7 +92,7 @@ class Root
      */
     public function typeParams()
     {
-        return app('menu-manager')->typeParams();
+        return MenuManager::typeParams();
     }
 
     /**
@@ -87,7 +100,7 @@ class Root
      */
     public function titles()
     {
-        return app('menu-manager')->titles();
+        return MenuManager::titles();
     }
 
     /**
@@ -95,7 +108,7 @@ class Root
      */
     public function title()
     {
-        return app('menu-manager')->titles($this->node->name);
+        return MenuManager::titles($this->node->name);
     }
 
     /**
