@@ -80,7 +80,7 @@ class Manager
      */
     public function registerMenus($data)
     {
-        if ($data) {
+        if (is_array($data)) {
             $data = $data + ['zones' => [], 'presenters' => [], 'types' => [], 'menus' => []];
             foreach ($data['zones'] as $name => $settings) {
                 $this->addZone($name, $settings);
