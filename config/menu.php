@@ -74,11 +74,17 @@ return [
                 ],
             ],
         ],
-        // Menus zone cá nhân của user
-        'my'       => [
+        // Menus zone của user
+        'manage'       => [
             'sidebar' => [
                 'items'     => [
-                    [
+                    'dashboard'   => [
+                        'url'   => 'route:manage.dashboard',
+                        'label' => 'trans:backend.dashboard',
+                        'icon'  => 'dashboard',
+                        'class' => 'special_link',
+                    ],
+                    'home'        => [
                         'url'        => '/',
                         'label'      => 'trans:common.home',
                         'icon'       => 'home',

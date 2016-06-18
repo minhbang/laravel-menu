@@ -7,6 +7,7 @@ use Minhbang\Menu\Roots\EditableRoot;
 
 /**
  * Class Manager
+ * Quản lý tất cả menus
  *
  * @package Minhbang\Menu
  */
@@ -79,19 +80,26 @@ class Manager
      */
     public function registerMenus($data)
     {
-        $data = $data + ['zones' => [], 'presenters' => [], 'types' => [], 'menus' => []];
-        foreach ($data['zones'] as $name => $settings) {
-            $this->addZone($name, $settings);
+        if ($data) {
+            $data = $data + ['zones' => [], 'presenters' => [], 'types' => [], 'menus' => []];
+            foreach ($data['zones'] as $name => $settings) {
+                $this->addZone($name, $settings);
+            }
+            foreach ($data['presenters'] as $name => $presenter) {
+                $this->addPresenter($name, $presenter);
+            }
+            foreach ($data['types'] as $name => $type) {
+                $this->addType($name, $type);
+            }
+            foreach ($data['menus'] as $name => $data) {
+                $this->addItem($name, $data);
+            }
         }
-        foreach ($data['presenters'] as $name => $presenter) {
-            $this->addPresenter($name, $presenter);
-        }
-        foreach ($data['types'] as $name => $type) {
-            $this->addType($name, $type);
-        }
-        foreach ($data['menus'] as $name => $data) {
-            $this->addItem($name, $data);
-        }
+    }
+
+    public function addBuildInItems()
+    {
+        $this->addItems(config('menu.menus'));
     }
 
     /**
