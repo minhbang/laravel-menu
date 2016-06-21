@@ -284,7 +284,7 @@ class Manager
     /**
      * Danh sách tên loại menu
      *
-     * @param null|string $type
+     * @param string $type
      * @param mixed $default
      *
      * @return array|mixed
@@ -292,8 +292,8 @@ class Manager
     public function types($type = null, $default = null)
     {
         $lists = [];
-        foreach ($this->types as $type => $class) {
-            $lists[$type] = $this->getType($type)->title();
+        foreach ($this->types as $name => $class) {
+            $lists[$name] = $this->getType($name)->title();
         }
 
         return array_get($lists, $type, $default);
