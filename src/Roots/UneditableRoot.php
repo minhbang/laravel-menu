@@ -112,7 +112,7 @@ class UneditableRoot implements Root
         if (empty($parent) || array_has($this->items, $parent)) {
             $item = $this->buildItem($data);
             array_set($this->items, $this->getParentKey($parent) . $key, $item);
-            $this->syncActive($keys, $item['active']);
+            $this->syncActive($keys, $this->removeNegativeActive($item['active']));
         }
     }
 
@@ -132,12 +132,27 @@ class UneditableRoot implements Root
     }
 
     /**
+     * Xóa các khai báo active 'Phủ định', có ! phía trước
+     *
+     * @param array $lists
+     *
+     * @return array
+     */
+    protected function removeNegativeActive($lists)
+    {
+        return array_filter($lists, function ($active) {
+            return strpos($active, '!') !== 0;
+        });
+    }
+
+    /**
      * Sync $active to $parents
      *
      * @param array $parents
      * @param array $active
      */
-    protected function syncActive($parents, $active)
+    protected
+    function syncActive($parents, $active)
     {
         while ($parents && $active) {
             $key = $this->getParentKey($parents) . '.active';
@@ -148,26 +163,28 @@ class UneditableRoot implements Root
     }
 
     /**
+     * @param array $active1
+     * @param array $active2
+     *
+     * @return array
+     */
+    protected
+    function mergeActive($active1, $active2)
+    {
+        return array_unique(array_merge($active1, $active2));
+    }
+
+    /**
      * Lấy array key từ $parents
      *
      * @param array|string $parents
      *
      * @return string
      */
-    protected function getParentKey($parents = [])
+    protected
+    function getParentKey($parents = [])
     {
         return is_string($parents) ? ($parents ? "{$parents}.items." : '') : implode('.items.', $parents);
-    }
-
-    /**
-     * @param array $active1
-     * @param array $active2
-     *
-     * @return array
-     */
-    protected function mergeActive($active1, $active2)
-    {
-        return array_unique(array_merge($active1, $active2));
     }
 
     /**
@@ -176,7 +193,8 @@ class UneditableRoot implements Root
      * @param string $sortBy
      * @param bool $sortAsc
      */
-    protected function export(&$items, $removeEmptyGroup, $sortBy, $sortAsc)
+    protected
+    function export(&$items, $removeEmptyGroup, $sortBy, $sortAsc)
     {
         if (!$items) {
             return;
@@ -208,7 +226,8 @@ class UneditableRoot implements Root
      * @param string $attr
      * @param string $fn
      */
-    protected function exportAttribute(&$attr, $fn)
+    protected
+    function exportAttribute(&$attr, $fn)
     {
         $len = strlen($fn) + 1;
         if (substr($attr, 0, $len) === "{$fn}:") {
