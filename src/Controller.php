@@ -73,8 +73,7 @@ class Controller extends BackendController
             [trans('menu::common.manage'), array_get($menus, $current)],
             'fa-sitemap',
             [
-                route('backend.setting.list') => trans('backend.config'),
-                '#'                           => trans('menu::common.menu'),
+                '#' => trans('menu::common.menu'),
             ],
             [
                 [
@@ -82,9 +81,9 @@ class Controller extends BackendController
                     trans('menu::common.create_item'),
                     ['class' => 'modal-link', 'type' => 'primary', 'size' => 'sm', 'icon' => 'plus-sign'],
                     [
-                        'title'  => trans('common.create_object', ['name' => trans('menu::common.item')]),
-                        'label'  => trans('common.save'),
-                        'icon'   => 'align-justify'
+                        'title' => trans('common.create_object', ['name' => trans('menu::common.item')]),
+                        'label' => trans('common.save'),
+                        'icon'  => 'align-justify',
                     ],
                 ],
             ]
@@ -132,6 +131,7 @@ class Controller extends BackendController
         $menu = new Menu();
         $method = 'post';
         $types = $this->manager->types();
+
         return view(
             'menu::form',
             compact('parent_label', 'url', 'method', 'menu', 'types')
