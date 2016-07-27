@@ -15,24 +15,9 @@ return [
     'delete_confirm' => 'Bạn có chắc chắn muốn xóa mục Menu: {ITEM_NAME}<br><strong>Lưu ý:</trong> Tất cả mục Menu con của nó sẽ bị xóa cùng!',
     'order_hint'     => 'Kéo các mục Menu để di chuyển đến vị trí mới',
     'not_found'      => 'Không tìm thấy Mục Menu yêu cầu.',
-
-    // Menu titles
-    'zones'          => [
-        'frontend' => 'Frontend',
-        'Backend'  => 'Backend',
-        'my'       => 'User Panel',
-    ],
-    'menus'          => [
-        'top'     => 'Top',
-        'main'    => 'Main',
-        'footer'  => 'Footer',
-        'bottom'  => 'Bottom',
-        'sidebar' => 'Sidebar',
-    ],
-    'items'          => [
-        'content'     => 'Nội dung',
-        'user'        => 'Nhân sự',
-        'setting'     => 'Cấu hình',
-        'maintenance' => 'Bảo trì',
-    ],
+    // Menu lists
+    'top'            => 'Top menu',
+    'main'           => 'Main menu',
+    'footer'         => 'Footer menu',
+    'bottom'         => 'Bottom menu',
 ];

@@ -3,12 +3,7 @@ namespace Minhbang\Menu;
 
 use Minhbang\Kit\Extensions\Request;
 
-/**
- * Class MenuRequest
- *
- * @package Minhbang\Menu
- */
-class MenuRequest extends Request
+class ItemRequest extends Request
 {
     public $trans_prefix = 'menu::common';
     public $rules = [

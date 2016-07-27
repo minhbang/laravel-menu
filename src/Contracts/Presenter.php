@@ -10,10 +10,9 @@ interface Presenter
     /**
      * Render menu HTML theo menu $options
      *
-     * @param \Minhbang\Menu\Contracts\Root $root
-     * @param array $options
+     * @param \Minhbang\Menu\Manager $manager
      *
      * @return string
      */
-    public function html($root, $options = []);
+    public function html($manager);
 }

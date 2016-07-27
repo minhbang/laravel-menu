@@ -17,6 +17,6 @@ class Facade extends BaseFacade
      */
     protected static function getFacadeAccessor()
     {
-        return 'menu-manager';
+        return 'menu';
     }
 }

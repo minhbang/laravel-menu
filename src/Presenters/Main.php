@@ -3,7 +3,7 @@ namespace Minhbang\Menu\Presenters;
 
 use Minhbang\Menu\Contracts\Presenter;
 use Html;
-use MenuManager;
+use Menu;
 
 /**
  * Class Main
@@ -28,16 +28,15 @@ class Main extends Base implements Presenter
     /**
      * Render menu dạng dropdown đa cấp
      *
-     * @param \Minhbang\Menu\Roots\EditableRoot $root
-     * @param array $options
+     * @param \Minhbang\Menu\Manager $manager
      *
      * @return string
      */
-    public function html($root, $options = [])
+    public function html($manager)
     {
-        $menu = $root->node();
+        $menu = $manager->root();
         $max_depth = $menu->getOption('max_depth', config('menu.default_max_depth'));
-        /** @var \Minhbang\Menu\Menu[]|\Illuminate\Support\Collection $items */
+        /** @var \Minhbang\Menu\Item[]|\Illuminate\Support\Collection $items */
         $items = $menu->descendants()->where('depth', '<=', $max_depth)->get();
         if ($items->count()) {
             $this->tag = $menu->getOption('tag', 'ul');
@@ -61,7 +60,7 @@ class Main extends Base implements Presenter
     }
 
     /**
-     * @param \Minhbang\Menu\Menu $item
+     * @param \Minhbang\Menu\Item $item
      *
      * @return string
      */
@@ -70,7 +69,7 @@ class Main extends Base implements Presenter
         if ($item->rgt - $item->lft == 1) {
             // is leaf
             $attributes = mb_array_merge($this->item_attributes, $item->getOption('attributes', []));
-            if (MenuManager::isActive($item->url)) {
+            if (Menu::isActive($item->url)) {
                 $this->addClass($attributes, 'active');
             }
             $attributes = Html::attributes($attributes);

@@ -4,8 +4,7 @@ namespace Minhbang\Menu;
 
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\AliasLoader;
-use Minhbang\Kit\Extensions\BaseServiceProvider;
-use MenuManager;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 /**
  * Class ServiceProvider
@@ -40,15 +39,13 @@ class ServiceProvider extends BaseServiceProvider
             'db'
         );
 
-        $this->mapWebRoutes($router, __DIR__ . '/routes.php', config('menu.add_route'));
-
+        if (config('menu.add_route') && !$this->app->routesAreCached()) {
+            require __DIR__ . '/routes.php';
+        }
         // pattern filters
         $router->pattern('menu', '[0-9]+');
         // model bindings
-        $router->model('menu', Menu::class);
-
-        // Add menus
-        MenuManager::addItems(config('menu.menus'));
+        $router->model('menu', 'Minhbang\Menu\Item');
     }
 
     /**
@@ -59,9 +56,9 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
-        $this->app['menu-manager'] = $this->app->share(
+        $this->app['menu'] = $this->app->share(
             function () {
-                return new Manager(
+                return new Menu(
                     config('menu.actives'),
                     config('menu.presenters'),
                     config('menu.types'),
@@ -72,7 +69,7 @@ class ServiceProvider extends BaseServiceProvider
         // add Setting alias
         $this->app->booting(
             function () {
-                AliasLoader::getInstance()->alias('MenuManager', Facade::class);
+                AliasLoader::getInstance()->alias('Menu', Facade::class);
             }
         );
     }
@@ -84,6 +81,6 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function provides()
     {
-        return ['menu-manager'];
+        return ['menu'];
     }
 }

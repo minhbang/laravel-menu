@@ -3,26 +3,19 @@ namespace Minhbang\Menu;
 
 use Minhbang\Kit\Extensions\BackendController;
 use Request;
-use MenuManager;
-use Response;
 
-/**
- * Class Controller
- *
- * @package Minhbang\Menu
- */
 class Controller extends BackendController
 {
     /**
      * Quản lý current menu
      *
-     * @var \Minhbang\Menu\Roots\EditableRoot
+     * @var \Minhbang\Menu\Manager
      */
     protected $manager;
     /**
      * Current menu root
      *
-     * @var \Minhbang\Menu\Menu
+     * @var \Minhbang\Menu\Item
      */
     protected $root;
     /**
@@ -47,11 +40,10 @@ class Controller extends BackendController
     protected function switchMenu($name = null)
     {
         $key = 'backend.menu.name';
-        $name = $name ?: session($key, MenuManager::firstEditable());
-        abort_unless(MenuManager::has($name), 500, 'Invalid Menu name!');
+        $name = $name ?: session($key, 'main');
         session([$key => $name]);
-        $this->manager = MenuManager::get($name);
-        $this->root = $this->manager->node();
+        $this->manager = app('menu')->get($name);
+        $this->root = $this->manager->root();
         $this->name = $name;
     }
 
@@ -68,27 +60,14 @@ class Controller extends BackendController
         $nestable = $this->manager->nestable();
         $menus = $this->manager->titles();
         $current = $this->name;
-
         $this->buildHeading(
-            [trans('menu::common.manage'), array_get($menus, $current)],
+            [trans('menu::common.manage'), "[{$menus[$current]}]"],
             'fa-sitemap',
             [
-                '#' => trans('menu::common.menu'),
-            ],
-            [
-                [
-                    route('backend.menu.create'),
-                    trans('menu::common.create_item'),
-                    ['class' => 'modal-link', 'type' => 'primary', 'size' => 'sm', 'icon' => 'plus-sign'],
-                    [
-                        'title' => trans('common.create_object', ['name' => trans('menu::common.item')]),
-                        'label' => trans('common.save'),
-                        'icon'  => 'align-justify',
-                    ],
-                ],
+                route('backend.setting.list') => trans('backend.config'),
+                '#'                           => trans('menu::common.menu'),
             ]
         );
-
         return view('menu::index', compact('max_depth', 'nestable', 'menus', 'current'));
     }
 
@@ -105,17 +84,17 @@ class Controller extends BackendController
     /**
      * Show the form for creating a new resource.
      *
-     * @param \Minhbang\Menu\Menu $menu
+     * @param \Minhbang\Menu\Item $menu
      *
      * @return \Illuminate\View\View
      */
-    public function createChildOf(Menu $menu)
+    public function createChildOf(Item $menu)
     {
         return $this->_create($menu);
     }
 
     /**
-     * @param null|\Minhbang\Menu\Menu $parent
+     * @param null|\Minhbang\Menu\Item $parent
      *
      * @return \Illuminate\View\View
      */
@@ -128,10 +107,9 @@ class Controller extends BackendController
             $parent_label = '- ROOT -';
             $url = route('backend.menu.store');
         }
-        $menu = new Menu();
+        $menu = new Item();
         $method = 'post';
         $types = $this->manager->types();
-
         return view(
             'menu::form',
             compact('parent_label', 'url', 'method', 'menu', 'types')
@@ -142,11 +120,11 @@ class Controller extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\Menu\MenuRequest $request
+     * @param \Minhbang\Menu\ItemRequest $request
      *
      * @return \Illuminate\View\View
      */
-    public function store(MenuRequest $request)
+    public function store(ItemRequest $request)
     {
         return $this->_store($request);
     }
@@ -154,12 +132,12 @@ class Controller extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\Menu\MenuRequest $request
-     * @param \Minhbang\Menu\Menu $menu
+     * @param \Minhbang\Menu\ItemRequest $request
+     * @param \Minhbang\Menu\Item $menu
      *
      * @return \Illuminate\View\View
      */
-    public function storeChildOf(MenuRequest $request, Menu $menu)
+    public function storeChildOf(ItemRequest $request, Item $menu)
     {
         return $this->_store($request, $menu);
     }
@@ -167,19 +145,18 @@ class Controller extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\Menu\MenuRequest $request
-     * @param null|\Minhbang\Menu\Menu $parent
+     * @param \Minhbang\Menu\ItemRequest $request
+     * @param null|\Minhbang\Menu\Item $parent
      *
      * @return \Illuminate\View\View
      */
     public function _store($request, $parent = null)
     {
-        $menu = new Menu();
+        $menu = new Item();
         $inputs = $request->all();
         $menu->fill($inputs);
         $menu->save();
         $menu->makeChildOf($parent ?: $this->root);
-
         return view(
             '_modal_script',
             [
@@ -195,11 +172,11 @@ class Controller extends BackendController
     /**
      * Display the specified resource.
      *
-     * @param \Minhbang\Menu\Menu $menu
+     * @param \Minhbang\Menu\Item $menu
      *
      * @return \Illuminate\View\View
      */
-    public function show(Menu $menu)
+    public function show(Item $menu)
     {
         return view('menu::show', compact('menu'));
     }
@@ -207,35 +184,33 @@ class Controller extends BackendController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \Minhbang\Menu\Menu $menu
+     * @param \Minhbang\Menu\Item $menu
      *
      * @return \Illuminate\View\View
      */
-    public function edit(Menu $menu)
+    public function edit(Item $menu)
     {
         $parent = $menu->parent;
         $parent_label = $parent->isRoot() ? '- ROOT -' : $parent->label;
         $url = route('backend.menu.update', ['menu' => $menu->id]);
         $method = 'put';
         $types = $this->manager->types();
-
         return view('menu::form', compact('parent_label', 'url', 'method', 'menu', 'types'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Minhbang\Menu\MenuRequest $request
-     * @param \Minhbang\Menu\Menu $menu
+     * @param \Minhbang\Menu\ItemRequest $request
+     * @param \Minhbang\Menu\Item $menu
      *
      * @return \Illuminate\View\View
      */
-    public function update(MenuRequest $request, Menu $menu)
+    public function update(ItemRequest $request, Item $menu)
     {
         $inputs = $request->all();
         $menu->fill($inputs);
         $menu->save();
-
         return view(
             '_modal_script',
             [
@@ -251,16 +226,15 @@ class Controller extends BackendController
     /**
      * Remove the specified resource from storage.
      *
-     * @param \Minhbang\Menu\Menu $menu
+     * @param \Minhbang\Menu\Item $menu
      *
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function destroy(Menu $menu)
+    public function destroy(Item $menu)
     {
         $menu->delete();
-
-        return Response::json(
+        return response()->json(
             [
                 'type'    => 'success',
                 'content' => trans('common.delete_object_success', ['name' => trans('menu::common.menu')]),
@@ -274,7 +248,7 @@ class Controller extends BackendController
      */
     public function data()
     {
-        return Response::json(['html' => $this->manager->nestable()]);
+        return response()->json(['html' => $this->manager->nestable()]);
     }
 
     /**
@@ -296,8 +270,7 @@ class Controller extends BackendController
                     }
                 }
             }
-
-            return Response::json(
+            return response()->json(
                 [
                     'type'    => 'success',
                     'content' => trans('common.order_object_success', ['name' => trans('menu::common.item')]),
@@ -311,13 +284,13 @@ class Controller extends BackendController
     /**
      * @param string $name
      *
-     * @return null|\Minhbang\Menu\Menu
+     * @return null|\Minhbang\Menu\Item
      */
     protected function getNode($name)
     {
         $id = Request::input($name);
         if ($id) {
-            if ($node = Menu::find($id)) {
+            if ($node = Item::find($id)) {
                 return $node;
             } else {
                 return $this->dieAjax();
