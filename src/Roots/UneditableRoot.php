@@ -151,8 +151,7 @@ class UneditableRoot implements Root
      * @param array $parents
      * @param array $active
      */
-    protected
-    function syncActive($parents, $active)
+    protected function syncActive($parents, $active)
     {
         while ($parents && $active) {
             $key = $this->getParentKey($parents) . '.active';
@@ -168,8 +167,7 @@ class UneditableRoot implements Root
      *
      * @return array
      */
-    protected
-    function mergeActive($active1, $active2)
+    protected function mergeActive($active1, $active2)
     {
         return array_unique(array_merge($active1, $active2));
     }
@@ -181,8 +179,7 @@ class UneditableRoot implements Root
      *
      * @return string
      */
-    protected
-    function getParentKey($parents = [])
+    protected function getParentKey($parents = [])
     {
         return is_string($parents) ? ($parents ? "{$parents}.items." : '') : implode('.items.', $parents);
     }
@@ -193,8 +190,7 @@ class UneditableRoot implements Root
      * @param string $sortBy
      * @param bool $sortAsc
      */
-    protected
-    function export(&$items, $removeEmptyGroup, $sortBy, $sortAsc)
+    protected function export(&$items, $removeEmptyGroup, $sortBy, $sortAsc)
     {
         if (!$items) {
             return;
@@ -226,8 +222,7 @@ class UneditableRoot implements Root
      * @param string $attr
      * @param string $fn
      */
-    protected
-    function exportAttribute(&$attr, $fn)
+    protected function exportAttribute(&$attr, $fn)
     {
         $len = strlen($fn) + 1;
         if (substr($attr, 0, $len) === "{$fn}:") {

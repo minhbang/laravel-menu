@@ -103,10 +103,13 @@ class Manager
     }
 
     /**
-     * @param array $items
+     * @param array|mixed $items
      */
     public function addItems($items)
     {
+        if (is_callable($items)) {
+            $items = call_user_func($items);
+        };
         if (is_array($items)) {
             foreach ($items as $name => $data) {
                 $this->addItem($name, $data);
