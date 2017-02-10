@@ -59,16 +59,14 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
-        $this->app['menu-manager'] = $this->app->share(
-            function () {
-                return new Manager(
-                    config('menu.actives'),
-                    config('menu.presenters'),
-                    config('menu.types'),
-                    config('menu.settings')
-                );
-            }
-        );
+        $this->app->singleton('menu-manager', function () {
+            return new Manager(
+                config('menu.actives'),
+                config('menu.presenters'),
+                config('menu.types'),
+                config('menu.settings')
+            );
+        });
         // add Setting alias
         $this->app->booting(
             function () {
