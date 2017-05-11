@@ -33,6 +33,7 @@ return [
         'content'     => 'Nội dung',
         'user'        => 'Nhân sự',
         'setting'     => 'Cấu hình',
+        'tools'       => 'Công cụ',
         'maintenance' => 'Bảo trì',
     ],
 ];

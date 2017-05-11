@@ -11,9 +11,8 @@ return [
         ],
     ],
 
-    'add_route'         => true,
     'default_max_depth' => 2,
-    'middleware'        => 'role:admin',
+    'middleware'        => ['web', 'role:admin'],
 
     /**
      * $patterns của các URI khi check active
@@ -75,7 +74,7 @@ return [
             ],
         ],
         // Menus zone của user
-        'manage'       => [
+        'manage'   => [
             'sidebar' => [
                 'items'     => [
                     'dashboard'   => [
@@ -120,6 +119,7 @@ return [
                     'content'     => ['label' => 'trans:menu::common.items.content', 'icon' => 'fa-files-o'],
                     'user'        => ['label' => 'trans:menu::common.items.user', 'icon' => 'fa-university'],
                     'setting'     => ['label' => 'trans:menu::common.items.setting', 'icon' => 'fa-cogs'],
+                    'tools'       => ['label' => 'trans:menu::common.items.tools', 'icon' => 'fa-wrench'],
                     'maintenance' => ['label' => 'trans:menu::common.items.maintenance', 'icon' => 'fa-wrench'],
                 ],
                 'presenter' => 'metis',

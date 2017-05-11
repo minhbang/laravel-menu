@@ -42,7 +42,7 @@
     </div>
 @stop
 
-@section('script')
+@push('scripts')
     <script type="text/javascript">
         $(document).ready(function () {
             $('.panel-nestable').mbNestable({
@@ -55,11 +55,11 @@
                 trans: {
                     name: '{{ trans('menu::common.item') }}'
                 },
-                csrf_token: '{{ csrf_token() }}'
+                csrf_token: window.Laravel.csrfToken
             });
             $.fn.mbHelpers.reloadPage = function () {
                 $('.panel-nestable').mbNestable('reload');
             }
         });
     </script>
-@stop
+@endpush

@@ -4,7 +4,7 @@ namespace Minhbang\Menu;
 
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\AliasLoader;
-use Minhbang\Kit\Extensions\BaseServiceProvider;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use MenuManager;
 
 /**
@@ -25,6 +25,9 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->loadTranslationsFrom(__DIR__ . '/../lang', 'menu');
         $this->loadViewsFrom(__DIR__ . '/../views', 'menu');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadRoutesFrom(__DIR__ . '/routes.php');
+
         $this->publishes(
             [
                 __DIR__ . '/../views'           => base_path('resources/views/vendor/menu'),
@@ -32,16 +35,6 @@ class ServiceProvider extends BaseServiceProvider
                 __DIR__ . '/../config/menu.php' => config_path('menu.php'),
             ]
         );
-        $this->publishes(
-            [
-                __DIR__ . '/../database/migrations/2015_03_21_155451_create_menus_table.php' =>
-                    database_path('migrations/2015_03_21_155451_create_menus_table.php'),
-            ],
-            'db'
-        );
-
-        $this->mapWebRoutes($router, __DIR__ . '/routes.php', config('menu.add_route'));
-
         // pattern filters
         $router->pattern('menu', '[0-9]+');
         // model bindings

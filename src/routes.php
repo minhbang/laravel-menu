@@ -1,9 +1,9 @@
 <?php
 Route::group(
-    ['prefix' => 'backend', 'namespace' => 'Minhbang\Menu', 'middleware' => config('menu.middleware')],
+    ['prefix' => 'backend', 'as' => 'backend.', 'namespace' => 'Minhbang\Menu', 'middleware' => config('menu.middleware')],
     function () {
         Route::group(
-            ['prefix' => 'menu', 'as' => 'backend.menu.'],
+            ['prefix' => 'menu', 'as' => 'menu.'],
             function () {
                 Route::get('data', ['as' => 'data', 'uses' => 'Controller@data']);
                 Route::get('{menu}/create', 'Controller@createChildOf');
