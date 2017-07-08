@@ -1,4 +1,4 @@
-@extends('backend.layouts.modal')
+@extends('kit::backend.layouts.modal')
 @section('content')
     {!! Form::model($menu,['class' => 'form-horizontal','url' => $url, 'method' => $method]) !!}
     <div class="form-group">

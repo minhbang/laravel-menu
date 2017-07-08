@@ -181,7 +181,7 @@ class Controller extends BackendController
         $menu->makeChildOf($parent ?: $this->root);
 
         return view(
-            '_modal_script',
+            'kit::_modal_script',
             [
                 'message'    => [
                     'type'    => 'success',
@@ -237,7 +237,7 @@ class Controller extends BackendController
         $menu->save();
 
         return view(
-            '_modal_script',
+            'kit::_modal_script',
             [
                 'message'    => [
                     'type'    => 'success',
