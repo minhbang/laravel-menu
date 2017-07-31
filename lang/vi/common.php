@@ -32,6 +32,7 @@ return [
     'items'          => [
         'content'     => 'Nội dung',
         'user'        => 'Nhân sự',
+        'appearance'  => 'Giao diện',
         'setting'     => 'Cấu hình',
         'tools'       => 'Công cụ',
         'maintenance' => 'Bảo trì',

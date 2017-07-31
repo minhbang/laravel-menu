@@ -2,8 +2,8 @@
 return [
     // Các menus quản lý Menu
     'menus' => [
-        'backend.sidebar.setting.menu' => [
-            'priority' => 2,
+        'backend.sidebar.appearance.menu' => [
+            'priority' => 3,
             'url'      => 'route:backend.menu.index',
             'label'    => 'trans:menu::common.menu',
             'icon'     => 'fa-sitemap',
@@ -12,7 +12,7 @@ return [
     ],
 
     'default_max_depth' => 2,
-    'middleware'        => ['web', 'role:admin'],
+    'middleware'        => [ 'web', 'role:admin' ],
 
     /**
      * $patterns của các URI khi check active
@@ -49,7 +49,7 @@ return [
                 'presenter' => 'main',
                 'options'   => [
                     'max_depth'  => 5,
-                    'attributes' => ['class' => 'nav navbar-nav'],
+                    'attributes' => [ 'class' => 'nav navbar-nav' ],
                 ],
             ],
             'footer' => [
@@ -59,7 +59,7 @@ return [
                     'max_depth'       => 2,
                     'tag'             => '',
                     'item_tag'        => 'div',
-                    'item_attributes' => ['class' => 'col-md-2 col-sm-6'],
+                    'item_attributes' => [ 'class' => 'col-md-2 col-sm-6' ],
                 ],
             ],
             'bottom' => [
@@ -69,7 +69,7 @@ return [
                     'max_depth'  => 1,
                     'tag'        => 'ul',
                     'item_tag'   => 'li',
-                    'attributes' => ['class' => 'pull-right list-inline'],
+                    'attributes' => [ 'class' => 'pull-right list-inline' ],
                 ],
             ],
         ],
@@ -87,16 +87,16 @@ return [
                         'url'        => '/',
                         'label'      => 'trans:common.home',
                         'icon'       => 'home',
-                        'attributes' => ['target' => '_blank'],
+                        'attributes' => [ 'target' => '_blank' ],
                     ],
-                    'content'     => ['label' => 'trans:menu::common.items.content', 'icon' => 'fa-files-o'],
-                    'user'        => ['label' => 'trans:menu::common.items.user', 'icon' => 'fa-university'],
-                    'setting'     => ['label' => 'trans:menu::common.items.setting', 'icon' => 'fa-cogs'],
-                    'maintenance' => ['label' => 'trans:menu::common.items.maintenance', 'icon' => 'fa-wrench'],
+                    'content'     => [ 'label' => 'trans:menu::common.items.content', 'icon' => 'fa-files-o' ],
+                    'user'        => [ 'label' => 'trans:menu::common.items.user', 'icon' => 'fa-university' ],
+                    'setting'     => [ 'label' => 'trans:menu::common.items.setting', 'icon' => 'fa-cogs' ],
+                    'maintenance' => [ 'label' => 'trans:menu::common.items.maintenance', 'icon' => 'fa-wrench' ],
                 ],
                 'presenter' => 'metis',
                 'options'   => [
-                    'attributes' => ['id' => 'side-menu'],
+                    'attributes' => [ 'id' => 'side-menu' ],
                 ],
             ],
         ],
@@ -114,17 +114,18 @@ return [
                         'url'        => '/',
                         'label'      => 'trans:common.home',
                         'icon'       => 'home',
-                        'attributes' => ['target' => '_blank'],
+                        'attributes' => [ 'target' => '_blank' ],
                     ],
-                    'content'     => ['label' => 'trans:menu::common.items.content', 'icon' => 'fa-files-o'],
-                    'user'        => ['label' => 'trans:menu::common.items.user', 'icon' => 'fa-university'],
-                    'setting'     => ['label' => 'trans:menu::common.items.setting', 'icon' => 'fa-cogs'],
-                    'tools'       => ['label' => 'trans:menu::common.items.tools', 'icon' => 'fa-wrench'],
-                    'maintenance' => ['label' => 'trans:menu::common.items.maintenance', 'icon' => 'fa-wrench'],
+                    'content'     => [ 'label' => 'trans:menu::common.items.content', 'icon' => 'fa-files-o' ],
+                    'user'        => [ 'label' => 'trans:menu::common.items.user', 'icon' => 'fa-university' ],
+                    'appearance'  => [ 'label' => 'trans:menu::common.items.appearance', 'icon' => 'fa-paint-brush' ],
+                    'setting'     => [ 'label' => 'trans:menu::common.items.setting', 'icon' => 'fa-cogs' ],
+                    'tools'       => [ 'label' => 'trans:menu::common.items.tools', 'icon' => 'fa-wrench' ],
+                    'maintenance' => [ 'label' => 'trans:menu::common.items.maintenance', 'icon' => 'fa-wrench' ],
                 ],
                 'presenter' => 'metis',
                 'options'   => [
-                    'attributes' => ['id' => 'side-menu'],
+                    'attributes' => [ 'id' => 'side-menu' ],
                 ],
             ],
         ],
