@@ -1,4 +1,5 @@
 <?php
+
 namespace Minhbang\Menu\Presenters;
 
 use Minhbang\Menu\Contracts\Presenter;
@@ -16,10 +17,12 @@ class Main extends Base implements Presenter
      * @var string
      */
     protected $tag;
+
     /**
      * @var string
      */
     protected $item_tag;
+
     /**
      * @var array
      */
@@ -52,7 +55,7 @@ class Main extends Base implements Presenter
                 $html .= $this->startNewItem($item);
                 $depth = $item->depth;
             }
-            $attributes = Html::attributes($menu->getOption('attributes', []));
+            $attributes = Html::attributes($options + $menu->getOption('attributes', []));
 
             return "<{$this->tag}{$attributes}>$html</{$this->tag}>";
         } else {
@@ -77,7 +80,7 @@ class Main extends Base implements Presenter
 
             return "<{$this->item_tag}{$attributes}><a href=\"{$item->url}\">{$item->label}</a></{$this->item_tag}>";
         } else {
-            $dropdown = 'dropdown' . ($item->depth > 1 ? '-submenu' : '');
+            $dropdown = 'dropdown'.($item->depth > 1 ? '-submenu' : '');
 
             return <<<"ITEM"
 <{$this->item_tag} class="{$dropdown}">
