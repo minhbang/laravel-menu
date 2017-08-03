@@ -7,6 +7,15 @@
             <p class="form-control-static text-primary">{{ $parent_label }}</p>
         </div>
     </div>
+    <div class="form-group{{ $errors->has('type') ? ' has-error':'' }}">
+        {!! Form::label('type', trans('menu::common.type'), ['class' => 'col-xs-3 control-label']) !!}
+        <div class="col-xs-9">
+            {!! Form::select('type', $types, null, ['class' => 'form-control selectize']) !!}
+            @if($errors->has('type'))
+                <p class="help-block">{{ $errors->first('type') }}</p>
+            @endif
+        </div>
+    </div>
     <div class="form-group{{ $errors->has('label') ? ' has-error':'' }}">
         {!! Form::label('label', trans('menu::common.label'), ['class' => 'col-xs-3 control-label']) !!}
         <div class="col-xs-9">
@@ -22,24 +31,6 @@
             {!! Form::text('name', null, ['class' => 'form-control', 'id' => 'name']) !!}
             @if($errors->has('name'))
                 <p class="help-block">{{ $errors->first('name') }}</p>
-            @endif
-        </div>
-    </div>
-    <div class="form-group{{ $errors->has('type') ? ' has-error':'' }}">
-        {!! Form::label('type', trans('menu::common.type'), ['class' => 'col-xs-3 control-label']) !!}
-        <div class="col-xs-9">
-            {!! Form::select('type', $types, null, ['class' => 'form-control selectize']) !!}
-            @if($errors->has('type'))
-                <p class="help-block">{{ $errors->first('type') }}</p>
-            @endif
-        </div>
-    </div>
-    <div class="form-group{{ $errors->has('params') ? ' has-error':'' }}">
-        {!! Form::label('params', trans('menu::common.params'), ['class' => 'col-xs-3 control-label']) !!}
-        <div class="col-xs-9">
-            {!! Form::text('params', null, ['class' => 'form-control']) !!}
-            @if($errors->has('params'))
-                <p class="help-block">{{ $errors->first('params') }}</p>
             @endif
         </div>
     </div>

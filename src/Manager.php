@@ -1,9 +1,11 @@
 <?php
+
 namespace Minhbang\Menu;
 
 use Minhbang\Menu\Roots\UneditableRoot;
 use Request;
 use Minhbang\Menu\Roots\EditableRoot;
+use Illuminate\Support\Collection;
 
 /**
  * Class Manager
@@ -26,17 +28,6 @@ class Manager
     protected $presenters = [];
 
     /**
-     * Menu types list
-     *
-     * @var array
-     */
-    protected $types;
-    /**
-     * @var array
-     */
-    protected $cached_types = [];
-
-    /**
      * @var array
      */
     protected $settings;
@@ -54,26 +45,88 @@ class Manager
      * @var  array
      */
     protected $titles = [];
+
     /**
      * @var string
      */
     protected $first_editable;
 
     /**
-     * Menu constructor.
+     * @var \Illuminate\Support\Collection
+     */
+    protected $menuTypes;
+
+    /**
+     * Manager constructor.
      *
      * @param array $actives
      * @param array $presenters
-     * @param array $types
      * @param array $settings
      */
-    public function __construct($actives = [], $presenters = [], $types = [], $settings = [])
+    public function __construct($actives = [], $presenters = [], $settings = [])
     {
+        $this->menuTypes = new Collection();
         $this->actives = $actives;
         $this->presenters = $presenters;
-        $this->types = $types;
         $this->settings = $settings;
     }
+
+    /**
+     * Đăng ký một Menu Type
+     *
+     * @param string $name
+     * @param string $title
+     * @param string $icon
+     * @param string $class
+     */
+    public function registerMenuType($name, $title, $icon, $class)
+    {
+        $this->menuTypes->put($name, new $class($name, mb_fn_str($title), $icon));
+    }
+
+    /**
+     * @param array $menuTypes
+     */
+    public function registerMenuTypes($menuTypes)
+    {
+        foreach ($menuTypes as $name => $menuType) {
+            $this->registerMenuType($name, $menuType['title'], $menuType['icon'], $menuType['class']);
+        }
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function menuTypes()
+    {
+        return $this->menuTypes;
+    }
+
+    /**
+     * Danh sách Menu Types, 'name' => 'title'
+     *
+     * @return array
+     */
+    public function types()
+    {
+        return $this->menuTypes->mapWithKeys(function($type, $name){
+            return [$name => $type->title];
+        })->all();
+    }
+
+    /**
+     * @param string $name
+     * @param string $attribute
+     *
+     * @return string|\Minhbang\Menu\Types\MenuType
+     */
+    public function menuType($name, $attribute = null)
+    {
+        $menuType = $this->menuTypes->get($name);
+
+        return $attribute ? ($menuType ? $menuType->$attribute : null) : $menuType;
+    }
+    ///-----------------------------------------------------------------------------------------------------------------
 
     /**
      * @param array $data
@@ -88,9 +141,7 @@ class Manager
             foreach ($data['presenters'] as $name => $presenter) {
                 $this->addPresenter($name, $presenter);
             }
-            foreach ($data['types'] as $name => $type) {
-                $this->addType($name, $type);
-            }
+            $this->registerMenuTypes($data['types']);
             foreach ($data['menus'] as $name => $data) {
                 $this->addItem($name, $data);
             }
@@ -126,8 +177,8 @@ class Manager
         $segments = explode('.', $name);
         if (count($segments) > 2) {
             $zone = array_shift($segments);
-            $menu = $zone . '.' . array_shift($segments);
-            if (!$this->get($menu)->isEditable()) {
+            $menu = $zone.'.'.array_shift($segments);
+            if (! $this->get($menu)->isEditable()) {
                 $this->get($menu)->addItem($segments, $data);
             }
         }
@@ -154,17 +205,6 @@ class Manager
     {
         if ($name && $presenter) {
             $this->presenters[$name] = $presenter;
-        }
-    }
-
-    /**
-     * @param string $name
-     * @param string $type
-     */
-    public function addType($name, $type)
-    {
-        if ($name && $type) {
-            $this->types[$name] = $type;
         }
     }
 
@@ -199,30 +239,19 @@ class Manager
     }
 
     /**
-     * @param string $type
-     * @param string $params
+     * Lấy menu root
      *
-     * @return string
-     */
-    public function buildUrl($type, $params)
-    {
-        return $this->getType($type)->url($params);
-    }
-
-    /**
      * @param string $name
      *
      * @return \Minhbang\Menu\Roots\EditableRoot|\Minhbang\Menu\Roots\UneditableRoot
      */
     public function get($name)
     {
-        if (!isset($this->lists[$name])) {
+        if (! isset($this->lists[$name])) {
             $settings = array_get($this->settings, $name);
             abort_unless($settings, 500, 'Invalid Menu name!');
             $presenter = $this->newObject($settings['presenter'], $this->presenters, 'Presenter');
-            $this->lists[$name] = array_get($settings, 'editable') ?
-                new EditableRoot($name, $presenter, $settings) :
-                new UneditableRoot($name, $presenter, $settings);
+            $this->lists[$name] = array_get($settings, 'editable') ? new EditableRoot($name, $presenter, $settings) : new UneditableRoot($name, $presenter, $settings);
         }
 
         return $this->lists[$name];
@@ -282,51 +311,6 @@ class Manager
     public function has($name)
     {
         return $name && array_get($this->settings, $name);
-    }
-
-    /**
-     * Danh sách tên loại menu
-     *
-     * @param string $type
-     * @param mixed $default
-     *
-     * @return array|mixed
-     */
-    public function types($type = null, $default = null)
-    {
-        $lists = [];
-        foreach ($this->types as $name => $class) {
-            $lists[$name] = $this->getType($name)->title();
-        }
-
-        return array_get($lists, $type, $default);
-    }
-
-    /**
-     * Danh sách tên params của các loại menu
-     */
-    public function typeParams()
-    {
-        $lists = [];
-        foreach ($this->types as $type => $class) {
-            $lists[$type] = $this->getType($type)->titleParams();
-        }
-
-        return $lists;
-    }
-
-    /**
-     * @param $name
-     *
-     * @return \Minhbang\Menu\Contracts\Type
-     */
-    protected function getType($name)
-    {
-        if (!isset($this->cached_types[$name])) {
-            $this->cached_types[$name] = $this->newObject($name, $this->types, 'Type');
-        }
-
-        return $this->cached_types[$name];
     }
 
     /**

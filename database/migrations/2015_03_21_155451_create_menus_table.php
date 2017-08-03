@@ -5,7 +5,6 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateMenusTable extends Migration
 {
-
     /**
      * Run the migrations.
      *
@@ -13,24 +12,22 @@ class CreateMenusTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'menus',
-            function (Blueprint $table) {
-                // Nestedset attributes
-                $table->increments('id');
-                $table->integer('parent_id')->nullable()->index();
-                $table->integer('lft')->nullable()->index();
-                $table->integer('rgt')->nullable()->index();
-                $table->integer('depth')->nullable();
+        Schema::create('menus', function (Blueprint $table) {
+            // Nestedset attributes
+            $table->increments('id');
+            $table->integer('parent_id')->nullable()->index();
+            $table->integer('lft')->nullable()->index();
+            $table->integer('rgt')->nullable()->index();
+            $table->integer('depth')->nullable();
 
-                // Normal columns
-                $table->string('name', 100);
-                $table->string('label', 100);
-                $table->string('type', 100);
-                $table->text('params');
-                $table->text('options')->nullable();
-            }
-        );
+            // Normal columns
+            $table->string('name', 100);
+            $table->string('label', 100);
+            $table->string('type', 100);
+            $table->text('params')->nullable();
+            $table->text('options')->nullable();
+            $table->tinyInteger('configured')->default(0);
+        });
     }
 
     /**
@@ -42,5 +39,4 @@ class CreateMenusTable extends Migration
     {
         Schema::drop('menus');
     }
-
 }

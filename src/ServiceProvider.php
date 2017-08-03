@@ -23,22 +23,22 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot(Router $router)
     {
-        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'menu');
-        $this->loadViewsFrom(__DIR__ . '/../views', 'menu');
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-        $this->loadRoutesFrom(__DIR__ . '/routes.php');
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'menu');
+        $this->loadViewsFrom(__DIR__.'/../views', 'menu');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadRoutesFrom(__DIR__.'/routes.php');
 
-        $this->publishes(
-            [
-                __DIR__ . '/../views'           => base_path('resources/views/vendor/menu'),
-                __DIR__ . '/../lang'            => base_path('resources/lang/vendor/menu'),
-                __DIR__ . '/../config/menu.php' => config_path('menu.php'),
-            ]
-        );
+        $this->publishes([
+            __DIR__.'/../views' => base_path('resources/views/vendor/menu'),
+            __DIR__.'/../lang' => base_path('resources/lang/vendor/menu'),
+            __DIR__.'/../config/menu.php' => config_path('menu.php'),
+        ]);
         // pattern filters
         $router->pattern('menu', '[0-9]+');
         // model bindings
         $router->model('menu', Menu::class);
+
+        MenuManager::registerMenuTypes(config('menu.types'));
 
         // Add menus
         MenuManager::addItems(config('menu.menus'));
@@ -51,21 +51,14 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
+        $this->mergeConfigFrom(__DIR__.'/../config/menu.php', 'menu');
         $this->app->singleton('menu-manager', function () {
-            return new Manager(
-                config('menu.actives'),
-                config('menu.presenters'),
-                config('menu.types'),
-                config('menu.settings')
-            );
+            return new Manager(config('menu.actives'), config('menu.presenters'), config('menu.settings'));
         });
         // add Setting alias
-        $this->app->booting(
-            function () {
-                AliasLoader::getInstance()->alias('MenuManager', Facade::class);
-            }
-        );
+        $this->app->booting(function () {
+            AliasLoader::getInstance()->alias('MenuManager', Facade::class);
+        });
     }
 
     /**

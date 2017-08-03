@@ -1,4 +1,5 @@
 <?php
+
 namespace Minhbang\Menu;
 
 use Minhbang\Kit\Extensions\Request;
@@ -11,11 +12,11 @@ use Minhbang\Kit\Extensions\Request;
 class MenuRequest extends Request
 {
     public $trans_prefix = 'menu::common';
+
     public $rules = [
-        'name'  => 'required|max:100',
-        'label'  => 'required|max:100',
-        'type'   => 'required|max:100',
-        'params' => 'required',
+        'name' => 'required|max:100',
+        'label' => 'required|max:100',
+        'type' => 'required|max:100',
     ];
 
     /**
@@ -27,5 +28,4 @@ class MenuRequest extends Request
     {
         return $this->rules;
     }
-
 }

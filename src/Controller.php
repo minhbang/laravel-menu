@@ -1,4 +1,5 @@
 <?php
+
 namespace Minhbang\Menu;
 
 use Minhbang\Kit\Extensions\BackendController;
@@ -19,12 +20,14 @@ class Controller extends BackendController
      * @var \Minhbang\Menu\Roots\EditableRoot
      */
     protected $manager;
+
     /**
      * Current menu root
      *
      * @var \Minhbang\Menu\Menu
      */
     protected $root;
+
     /**
      * Current menu name
      *
@@ -55,6 +58,37 @@ class Controller extends BackendController
         $this->name = $name;
     }
 
+    /**
+     * @param \Minhbang\Menu\Menu $menu
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function params(Menu $menu)
+    {
+        return ($menuType = $menu->typeInstance()) ? $menuType->form($menu, $this->route_prefix) : view('kit::backend.message', [
+            'type' => 'error',
+            'content' => trans('menu::type.unregistered'),
+        ]);
+    }
+
+    /**
+     * @param \Minhbang\Menu\MenuParamsRequest $request
+     * @param \Minhbang\Menu\Menu $menu
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function updateParams(MenuParamsRequest $request, Menu $menu)
+    {
+        $menu->updateParams($request);
+        $menu->configured = 1;
+        $menu->save();
+
+        return view('kit::_modal_script', [
+            'message' => [
+                'type' => 'success',
+                'content' => trans('common.update_object_success', ['name' => trans('menu::common.item')]),
+            ],
+            'reloadPage' => true,
+        ]);
+    }
 
     /**
      * @param string|null $name
@@ -69,25 +103,20 @@ class Controller extends BackendController
         $menus = $this->manager->titles();
         $current = $this->name;
 
-        $this->buildHeading(
-            [trans('menu::common.manage'), array_get($menus, $current)],
-            'fa-sitemap',
+        $this->buildHeading([trans('menu::common.manage'), array_get($menus, $current)], 'fa-sitemap', [
+            '#' => trans('menu::common.menu'),
+        ], [
             [
-                '#' => trans('menu::common.menu'),
-            ],
-            [
+                route('backend.menu.create'),
+                trans('menu::common.create_item'),
+                ['class' => 'modal-link', 'type' => 'primary', 'size' => 'sm', 'icon' => 'plus-sign'],
                 [
-                    route('backend.menu.create'),
-                    trans('menu::common.create_item'),
-                    ['class' => 'modal-link', 'type' => 'primary', 'size' => 'sm', 'icon' => 'plus-sign'],
-                    [
-                        'title' => trans('common.create_object', ['name' => trans('menu::common.item')]),
-                        'label' => trans('common.save'),
-                        'icon'  => 'align-justify',
-                    ],
+                    'title' => trans('common.create_object', ['name' => trans('menu::common.item')]),
+                    'label' => trans('common.save'),
+                    'icon' => 'align-justify',
                 ],
-            ]
-        );
+            ],
+        ]);
 
         return view('menu::index', compact('max_depth', 'nestable', 'menus', 'current'));
     }
@@ -131,13 +160,8 @@ class Controller extends BackendController
         $menu = new Menu();
         $method = 'post';
         $types = $this->manager->types();
-
-        return view(
-            'menu::form',
-            compact('parent_label', 'url', 'method', 'menu', 'types')
-        );
+        return view('menu::form', compact('parent_label', 'url', 'method', 'menu', 'types'));
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -177,19 +201,18 @@ class Controller extends BackendController
         $menu = new Menu();
         $inputs = $request->all();
         $menu->fill($inputs);
+        $menu->configured = 0;
+        $menu->params = $menu->typeInstance()->paramsDefault;
         $menu->save();
         $menu->makeChildOf($parent ?: $this->root);
 
-        return view(
-            'kit::_modal_script',
-            [
-                'message'    => [
-                    'type'    => 'success',
-                    'content' => trans('common.create_object_success', ['name' => trans('menu::common.item')]),
-                ],
-                'reloadPage' => true,
-            ]
-        );
+        return view('kit::_modal_script', [
+            'message' => [
+                'type' => 'success',
+                'content' => trans('common.create_object_success', ['name' => trans('menu::common.item')]),
+            ],
+            'reloadPage' => true,
+        ]);
     }
 
     /**
@@ -232,20 +255,22 @@ class Controller extends BackendController
      */
     public function update(MenuRequest $request, Menu $menu)
     {
+        $type = $menu->type;
         $inputs = $request->all();
         $menu->fill($inputs);
+        if ($type != $menu->type) {
+            $menu->params = $menu->typeInstance()->paramsDefault;
+            $menu->configured = 0;
+        }
         $menu->save();
 
-        return view(
-            'kit::_modal_script',
-            [
-                'message'    => [
-                    'type'    => 'success',
-                    'content' => trans('common.update_object_success', ['name' => trans('menu::common.item')]),
-                ],
-                'reloadPage' => true,
-            ]
-        );
+        return view('kit::_modal_script', [
+            'message' => [
+                'type' => 'success',
+                'content' => trans('common.update_object_success', ['name' => trans('menu::common.item')]),
+            ],
+            'reloadPage' => true,
+        ]);
     }
 
     /**
@@ -260,12 +285,10 @@ class Controller extends BackendController
     {
         $menu->delete();
 
-        return Response::json(
-            [
-                'type'    => 'success',
-                'content' => trans('common.delete_object_success', ['name' => trans('menu::common.menu')]),
-            ]
-        );
+        return Response::json([
+            'type' => 'success',
+            'content' => trans('common.delete_object_success', ['name' => trans('menu::common.menu')]),
+        ]);
     }
 
     /**
@@ -297,12 +320,10 @@ class Controller extends BackendController
                 }
             }
 
-            return Response::json(
-                [
-                    'type'    => 'success',
-                    'content' => trans('common.order_object_success', ['name' => trans('menu::common.item')]),
-                ]
-            );
+            return Response::json([
+                'type' => 'success',
+                'content' => trans('common.order_object_success', ['name' => trans('menu::common.item')]),
+            ]);
         } else {
             return $this->dieAjax();
         }
@@ -334,11 +355,9 @@ class Controller extends BackendController
      */
     protected function dieAjax()
     {
-        return die(json_encode(
-            [
-                'type'    => 'error',
-                'content' => trans('menu::common.not_found'),
-            ]
-        ));
+        return die(json_encode([
+            'type' => 'error',
+            'content' => trans('menu::common.not_found'),
+        ]));
     }
 }
