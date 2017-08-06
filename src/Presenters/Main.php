@@ -84,7 +84,7 @@ class Main extends Base implements Presenter
 
             return <<<"ITEM"
 <{$this->item_tag} class="{$dropdown}">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="10">{$item->label}</a>
+    <a href="{$item->url}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="10">{$item->label}</a>
     <{$this->tag} class="dropdown-menu" role="menu">
 ITEM;
         }
