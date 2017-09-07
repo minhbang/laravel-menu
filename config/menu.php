@@ -125,6 +125,7 @@ return [
                         'attributes' => ['target' => '_blank'],
                     ],
                     'content' => ['label' => 'trans:menu::common.items.content', 'icon' => 'fa-files-o'],
+                    'media' => ['label' => 'trans:menu::common.items.media', 'icon' => 'fa-folder-open'],
                     'user' => ['label' => 'trans:menu::common.items.user', 'icon' => 'fa-university'],
                     'appearance' => ['label' => 'trans:menu::common.items.appearance', 'icon' => 'fa-paint-brush'],
                     'setting' => ['label' => 'trans:menu::common.items.setting', 'icon' => 'fa-cogs'],

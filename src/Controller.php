@@ -2,9 +2,9 @@
 
 namespace Minhbang\Menu;
 
+use MenuManager;
 use Minhbang\Kit\Extensions\BackendController;
 use Request;
-use MenuManager;
 use Response;
 
 /**
@@ -45,29 +45,16 @@ class Controller extends BackendController
     }
 
     /**
-     * @param null|string $name
-     */
-    protected function switchMenu($name = null)
-    {
-        $key = 'backend.menu.name';
-        $name = $name ?: session($key, MenuManager::firstEditable());
-        abort_unless(MenuManager::has($name), 500, 'Invalid Menu name!');
-        session([$key => $name]);
-        $this->manager = MenuManager::get($name);
-        $this->root = $this->manager->node();
-        $this->name = $name;
-    }
-
-    /**
      * @param \Minhbang\Menu\Menu $menu
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function params(Menu $menu)
     {
-        return ($menuType = $menu->typeInstance()) ? $menuType->form($menu, $this->route_prefix) : view('kit::backend.message', [
-            'type' => 'error',
-            'content' => trans('menu::type.unregistered'),
-        ]);
+        return ($menuType = $menu->typeInstance()) ? $menuType->form($menu, $this->route_prefix) :
+            view('kit::backend.message', [
+                'type' => 'error',
+                'content' => trans('menu::type.unregistered'),
+            ]);
     }
 
     /**
@@ -144,26 +131,6 @@ class Controller extends BackendController
     }
 
     /**
-     * @param null|\Minhbang\Menu\Menu $parent
-     *
-     * @return \Illuminate\View\View
-     */
-    protected function _create($parent = null)
-    {
-        if ($parent) {
-            $parent_label = $parent->label;
-            $url = route('backend.menu.storeChildOf', ['menu' => $parent->id]);
-        } else {
-            $parent_label = '- ROOT -';
-            $url = route('backend.menu.store');
-        }
-        $menu = new Menu();
-        $method = 'post';
-        $types = $this->manager->types();
-        return view('menu::form', compact('parent_label', 'url', 'method', 'menu', 'types'));
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param \Minhbang\Menu\MenuRequest $request
@@ -201,7 +168,7 @@ class Controller extends BackendController
         $menu = new Menu();
         $inputs = $request->all();
         $menu->fill($inputs);
-        $menu->configured = 0;
+        $menu->configured = $menu->typeInstance()->hasParams ? 0 : 1;
         $menu->params = $menu->typeInstance()->paramsDefault;
         $menu->save();
         $menu->makeChildOf($parent ?: $this->root);
@@ -260,7 +227,7 @@ class Controller extends BackendController
         $menu->fill($inputs);
         if ($type != $menu->type) {
             $menu->params = $menu->typeInstance()->paramsDefault;
-            $menu->configured = 0;
+            $menu->configured = $menu->typeInstance()->hasParams ? 0 : 1;
         }
         $menu->save();
 
@@ -327,6 +294,41 @@ class Controller extends BackendController
         } else {
             return $this->dieAjax();
         }
+    }
+
+    /**
+     * @param null|string $name
+     */
+    protected function switchMenu($name = null)
+    {
+        $key = 'backend.menu.name';
+        $name = $name ?: session($key, MenuManager::firstEditable());
+        abort_unless(MenuManager::has($name), 500, 'Invalid Menu name!');
+        session([$key => $name]);
+        $this->manager = MenuManager::get($name);
+        $this->root = $this->manager->node();
+        $this->name = $name;
+    }
+
+    /**
+     * @param null|\Minhbang\Menu\Menu $parent
+     *
+     * @return \Illuminate\View\View
+     */
+    protected function _create($parent = null)
+    {
+        if ($parent) {
+            $parent_label = $parent->label;
+            $url = route('backend.menu.storeChildOf', ['menu' => $parent->id]);
+        } else {
+            $parent_label = '- ROOT -';
+            $url = route('backend.menu.store');
+        }
+        $menu = new Menu();
+        $method = 'post';
+        $types = $this->manager->types();
+
+        return view('menu::form', compact('parent_label', 'url', 'method', 'menu', 'types'));
     }
 
     /**

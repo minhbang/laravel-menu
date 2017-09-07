@@ -8,6 +8,7 @@ use Validator;
  * @property-read string $name
  * @property-read string $title
  * @property-read string $icon
+ * @property-read bool $hasParams
  * @property-read array $paramsRules
  * @property-read array $paramsAttributes
  * @property-read array $paramsDefault
@@ -36,6 +37,11 @@ abstract class MenuType
     protected $paramsAttributes;
 
     /**
+     * @var bool
+     */
+    protected $hasParams;
+
+    /**
      * @var array
      */
     protected $paramsRules;
@@ -46,43 +52,24 @@ abstract class MenuType
     protected $paramsDefault;
 
     /**
-     * Form View cấu hình trong backend
+     * Menu Type constructor.
      *
-     * @return string
+     * @param string $name
+     * @param string $title
+     * @param string $icon
      */
-    abstract protected function formView();
-
-    /**
-     * Tạo URL từ menu
-     *
-     * @param \Minhbang\Menu\Menu $menu
-     *
-     * @return string
-     *
-     */
-    abstract protected function buildUrl($menu);
-
-    /**
-     * Định nghĩa các attributes của params, định dạng:
-     * [
-     *      ['name' => string, 'title' => string, 'rule' => string, 'default' => mixed],
-     *      ...
-     * ]
-     *
-     * @return array
-     */
-    abstract protected function paramsAttributes();
-
-    /**
-     * Xét điều kiện Visible của menu
-     *
-     * @param \Minhbang\Menu\Menu $menu
-     *
-     * @return bool
-     */
-    protected function visible($menu)
+    public function __construct($name, $title, $icon)
     {
-        return $menu->configured > 0;
+        $this->name = $name;
+        $this->title = $title;
+        $this->icon = $icon;
+        $except = array_keys($this->paramsFixed());
+
+        $attributes = collect($this->paramsAttributes());
+        $this->paramsAttributes = $attributes->pluck('title', 'name')->except($except)->all();
+        $this->paramsRules = $attributes->pluck('rule', 'name')->except($except)->all();
+        $this->paramsDefault = $attributes->pluck('default', 'name')->except($except)->all();
+        $this->hasParams = $attributes->count() > 0;
     }
 
     /**
@@ -147,35 +134,57 @@ abstract class MenuType
         return Validator::make($params, $this->paramsRules, [], $this->paramsAttributes)->errors();
     }
 
-    /**
-     * Menu Type constructor.
-     *
-     * @param string $name
-     * @param string $title
-     * @param string $icon
-     */
-    public function __construct($name, $title, $icon)
-    {
-        $this->name = $name;
-        $this->title = $title;
-        $this->icon = $icon;
-
-        $except = array_keys($this->paramsFixed());
-        $attributes = collect($this->paramsAttributes());
-        $this->paramsAttributes = $attributes->pluck('title', 'name')->except($except)->all();
-        $this->paramsRules = $attributes->pluck('rule', 'name')->except($except)->all();
-        $this->paramsDefault = $attributes->pluck('default', 'name')->except($except)->all();
-    }
-
     function __get($name)
     {
         return in_array($name, [
             'name',
             'title',
             'icon',
+            'hasParams',
             'paramsRules',
             'paramsAttributes',
             'paramsDefault',
-        ]) ? $this->$name : null;
+        ]) ? $this->{$name} : null;
+    }
+
+    /**
+     * Form View cấu hình trong backend
+     * Trả về false nếu menu không tham số
+     *
+     * @return string|false
+     */
+    abstract protected function formView();
+
+    /**
+     * Tạo URL từ menu
+     *
+     * @param \Minhbang\Menu\Menu $menu
+     *
+     * @return string
+     *
+     */
+    abstract protected function buildUrl($menu);
+
+    /**
+     * Định nghĩa các attributes của params, định dạng:
+     * [
+     *      ['name' => string, 'title' => string, 'rule' => string, 'default' => mixed],
+     *      ...
+     * ]
+     *
+     * @return array
+     */
+    abstract protected function paramsAttributes();
+
+    /**
+     * Xét điều kiện Visible của menu
+     *
+     * @param \Minhbang\Menu\Menu $menu
+     *
+     * @return bool
+     */
+    protected function visible($menu)
+    {
+        return $menu->configured > 0;
     }
 }

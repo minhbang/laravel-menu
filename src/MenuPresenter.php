@@ -17,7 +17,8 @@ class MenuPresenter extends Presenter
      */
     public function label()
     {
-        return $this->entity->label.(! $this->entity->configured ? '<code> — '.trans('menu::type.not_config').'</code>' : '');
+        return $this->entity->label.(! $this->entity->configured ?
+                '<code> — '.trans('menu::type.not_config').'</code>' : '');
     }
 
     /**
@@ -56,14 +57,15 @@ class MenuPresenter extends Presenter
         $menuType = $this->entity->typeInstance();
         $paramsForm = $menuType->formOptions() + ['height' => null];
         $paramsFormHeight = $paramsForm['height'] ? "data-height=\"{$paramsForm['height']}\"" : '';
-        $params = '<a href="'.url("backend/menu/{$this->entity->id}/params").'"
+        $params = $menuType->hasParams ? '<a href="'.url("backend/menu/{$this->entity->id}/params").'"
                class="modal-link btn btn-warning btn-xs"
                data-toggle="tooltip"
                data-title="'.trans('menu::type.params').'"
                data-label="'.trans('common.save').'"
                '.$paramsFormHeight.'
                data-icon="cogs"><i class="fa fa-cogs"></i>
-            </a>';
+            </a>' : '<a href="#" class="btn btn-warning btn-xs disabled"><i class="fa fa-cogs"></i></a>';
+
         if ($this->entity->depth < $max_depth) {
             $child = '<a href="'.url("backend/menu/{$this->entity->id}/create").'"
                class="modal-link btn btn-primary btn-xs"

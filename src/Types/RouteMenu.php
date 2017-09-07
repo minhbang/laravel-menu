@@ -4,7 +4,6 @@ namespace Minhbang\Menu\Types;
 
 use Minhbang\Kit\Support\HasRouteAttribute;
 use Minhbang\Menu\Contracts\Type;
-use Route as RouteManager;
 
 /**
  * Class RouteMenu
@@ -20,6 +19,16 @@ class RouteMenu extends MenuType
         return ['height' => 320] + parent::formOptions();
     }
 
+    /**
+     * @param \Minhbang\Menu\Menu $menu
+     *
+     * @return string
+     */
+    public function buildUrl($menu)
+    {
+        return $this->getRouteUrl($menu->params['name']);
+    }
+
     protected function formView()
     {
         return 'menu::type.route_form';
@@ -30,15 +39,5 @@ class RouteMenu extends MenuType
         return [
             ['name' => 'name', 'title' => trans('menu::type.route.name'), 'rule' => 'required', 'default' => '#'],
         ];
-    }
-
-    /**
-     * @param \Minhbang\Menu\Menu $menu
-     *
-     * @return string
-     */
-    public function buildUrl($menu)
-    {
-        return $this->getRouteUrl($menu->params['name']);
     }
 }

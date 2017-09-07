@@ -12,6 +12,16 @@ use Minhbang\Menu\Contracts\Type;
 class UrlMenu extends MenuType
 {
     /**
+     * @param \Minhbang\Menu\Menu $menu
+     *
+     * @return string
+     */
+    public function buildUrl($menu)
+    {
+        return $menu->params['url'];
+    }
+
+    /**
      * @return string
      */
     protected function formView()
@@ -27,15 +37,5 @@ class UrlMenu extends MenuType
         return [
             ['name' => 'url', 'title' => trans('menu::type.url.url'), 'rule' => 'required', 'default' => '#'],
         ];
-    }
-
-    /**
-     * @param \Minhbang\Menu\Menu $menu
-     *
-     * @return string
-     */
-    public function buildUrl($menu)
-    {
-        return $menu->params['url'];
     }
 }
