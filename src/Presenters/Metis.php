@@ -1,4 +1,5 @@
 <?php
+
 namespace Minhbang\Menu\Presenters;
 
 use Minhbang\Menu\Contracts\Presenter;
@@ -11,54 +12,6 @@ use Request;
  */
 class Metis extends Base implements Presenter
 {
-    /**
-     * Render menu item
-     *
-     * @param array $item
-     * @param int $level
-     * @param string $sub
-     * @param null|string $prefix
-     *
-     * @return string
-     */
-    protected function item($item, $level, $sub = null, $prefix = null)
-    {
-        if (isset($item['visible']) && !$item['visible']) {
-            return '';
-        }
-        $item = $item + ['url' => '#', 'class' => '', 'icon' => false, 'badge' => false];
-        if ($item['url'] !== '#') {
-            $item['url'] = url(mb_str_prefix($prefix, $item['url']));
-        }
-        $item['active'] = isset($item['active']) ? $item['active'] : $item['url'];
-
-        $icon = mb_icon_html($item['icon'], '', 'i');
-        $icon = $icon ? "$icon " : '';
-
-        $class = $item['class'] . ' ' . mb_menu_active(
-                $item['active'],
-                $prefix,
-                'active',
-                $item['url'] == Request::url()
-            );
-
-        if ($item['badge']) {
-            if (is_string($item['badge'])) {
-                $item['badge'] = ['label' => $item['badge']];
-            }
-            $item['badge'] = $item['badge'] + ['type' => '', 'class' => 'label'];
-            $badge_class = ($item['badge']['type'] ? " {$item['badge']['class']}-{$item['badge']['type']}" : '');
-            $badge_class = "{$item['badge']['class']}{$badge_class} pull-right";
-            $arrow = "<span class=\"{$badge_class}\">{$item['badge']['label']}</span>";
-        } else {
-            $arrow = $sub ? ' <span class="fa arrow"></span>' : '';
-        }
-        $label = $level == 1 ? "<span class=\"nav-label\">{$item['label']}</span>" : $item['label'];
-        $attributes = isset($item['attributes']) ? $item['attributes'] : [];
-
-        return "<li class=\"{$class}\"><a href=\"{$item['url']}\" {$this->attributes($attributes)}>{$icon}{$label}{$arrow}</a>{$sub}</li>";
-    }
-
     /**
      * Render menu theo định dạng của metisMenu
      * $items = [
@@ -101,7 +54,7 @@ class Metis extends Base implements Presenter
                 $sub = $this->items($item['items'], null, null, $sub_prefix, $level + 1);
             }
             if (isset($item['active'])) {
-                if (!is_array($item['active'])) {
+                if (! is_array($item['active'])) {
                     $item['active'] = [$item['active']];
                 }
                 $active_prefix = mb_array_extract('prefix', $item['active'], $item['prefix']);
@@ -123,5 +76,56 @@ class Metis extends Base implements Presenter
     public function html($root, $options = [])
     {
         return $this->items($root->items(), array_get($options, 'header'), $root->settings('options.attributes.id'));
+    }
+
+    /**
+     * Render menu item
+     *
+     * @param array $item
+     * @param int $level
+     * @param string $sub
+     * @param null|string $prefix
+     *
+     * @return string
+     */
+    protected function item($item, $level, $sub = null, $prefix = null)
+    {
+        if (isset($item['role']) && ! authority()->user()->is($item['role'])) {
+            return '';
+        }
+        if (isset($item['visible']) && ! $item['visible']) {
+            return '';
+        }
+        $item = $item + ['url' => '#', 'class' => '', 'icon' => false, 'badge' => false];
+        if ($item['url'] !== '#') {
+            $item['url'] = url(mb_str_prefix($prefix, $item['url']));
+        }
+        $item['active'] = isset($item['active']) ? $item['active'] : $item['url'];
+
+        $icon = mb_icon_html($item['icon'], '', 'i');
+        $icon = $icon ? "$icon " : '';
+
+        $class = $item['class'].' '.mb_menu_active(
+                $item['active'],
+                $prefix,
+                'active',
+                $item['url'] == Request::url()
+            );
+
+        if ($item['badge']) {
+            if (is_string($item['badge'])) {
+                $item['badge'] = ['label' => $item['badge']];
+            }
+            $item['badge'] = $item['badge'] + ['type' => '', 'class' => 'label'];
+            $badge_class = ($item['badge']['type'] ? " {$item['badge']['class']}-{$item['badge']['type']}" : '');
+            $badge_class = "{$item['badge']['class']}{$badge_class} pull-right";
+            $arrow = "<span class=\"{$badge_class}\">{$item['badge']['label']}</span>";
+        } else {
+            $arrow = $sub ? ' <span class="fa arrow"></span>' : '';
+        }
+        $label = $level == 1 ? "<span class=\"nav-label\">{$item['label']}</span>" : $item['label'];
+        $attributes = isset($item['attributes']) ? $item['attributes'] : [];
+
+        return "<li class=\"{$class}\"><a href=\"{$item['url']}\" {$this->attributes($attributes)}>{$icon}{$label}{$arrow}</a>{$sub}</li>";
     }
 }

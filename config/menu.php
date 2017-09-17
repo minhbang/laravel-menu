@@ -12,7 +12,7 @@ return [
     ],
 
     'default_max_depth' => 2,
-    'middleware' => ['web', 'role:admin'],
+    'middleware' => ['web', 'role:sys.admin'],
 
     /**
      * $patterns của các URI khi check active
@@ -125,12 +125,36 @@ return [
                         'attributes' => ['target' => '_blank'],
                     ],
                     'content' => ['label' => 'trans:menu::common.items.content', 'icon' => 'fa-files-o'],
-                    'media' => ['label' => 'trans:menu::common.items.media', 'icon' => 'fa-folder-open'],
-                    'user' => ['label' => 'trans:menu::common.items.user', 'icon' => 'fa-university'],
-                    'appearance' => ['label' => 'trans:menu::common.items.appearance', 'icon' => 'fa-paint-brush'],
-                    'setting' => ['label' => 'trans:menu::common.items.setting', 'icon' => 'fa-cogs'],
-                    'tools' => ['label' => 'trans:menu::common.items.tools', 'icon' => 'fa-wrench'],
-                    'maintenance' => ['label' => 'trans:menu::common.items.maintenance', 'icon' => 'fa-wrench'],
+                    'media' => [
+                        'label' => 'trans:menu::common.items.media',
+                        'icon' => 'fa-folder-open',
+                        'role' => 'sys.admin',
+                    ],
+                    'user' => [
+                        'label' => 'trans:menu::common.items.user',
+                        'icon' => 'fa-university',
+                        'role' => 'sys.admin',
+                    ],
+                    'appearance' => [
+                        'label' => 'trans:menu::common.items.appearance',
+                        'icon' => 'fa-paint-brush',
+                        'role' => 'sys.admin',
+                    ],
+                    'setting' => [
+                        'label' => 'trans:menu::common.items.setting',
+                        'icon' => 'fa-cogs',
+                        'role' => 'sys.admin',
+                    ],
+                    'tools' => [
+                        'label' => 'trans:menu::common.items.tools',
+                        'icon' => 'fa-wrench',
+                        'role' => 'sys.admin',
+                    ],
+                    'maintenance' => [
+                        'label' => 'trans:menu::common.items.maintenance',
+                        'icon' => 'fa-wrench',
+                        'role' => 'sys.admin',
+                    ],
                 ],
                 'presenter' => 'metis',
                 'options' => [
