@@ -54,10 +54,10 @@ class MenuPresenter extends Presenter
      */
     public function actions($max_depth)
     {
-        $menuType = $this->entity->typeInstance();
-        $paramsForm = $menuType->formOptions() + ['height' => null];
-        $paramsFormHeight = $paramsForm['height'] ? "data-height=\"{$paramsForm['height']}\"" : '';
-        $params = $menuType->hasParams ? '<a href="'.url("backend/menu/{$this->entity->id}/params").'"
+        if($menuType = $this->entity->typeInstance()) {
+            $paramsForm = $menuType->formOptions() + ['height' => null];
+            $paramsFormHeight = $paramsForm['height'] ? "data-height=\"{$paramsForm['height']}\"" : '';
+            $params = $menuType->hasParams ? '<a href="'.url("backend/menu/{$this->entity->id}/params").'"
                class="modal-link btn btn-warning btn-xs"
                data-toggle="tooltip"
                data-title="'.trans('menu::type.params').'"
@@ -66,37 +66,37 @@ class MenuPresenter extends Presenter
                data-icon="cogs"><i class="fa fa-cogs"></i>
             </a>' : '<a href="#" class="btn btn-warning btn-xs disabled"><i class="fa fa-cogs"></i></a>';
 
-        if ($this->entity->depth < $max_depth) {
-            $child = '<a href="'.url("backend/menu/{$this->entity->id}/create").'"
+            if ($this->entity->depth < $max_depth) {
+                $child = '<a href="'.url("backend/menu/{$this->entity->id}/create").'"
                class="modal-link btn btn-primary btn-xs"
                data-toggle="tooltip"
                data-title="'.trans('common.create_child_object', ['name' => trans('menu::common.item')]).'"
                data-label="'.trans('common.save').'"
                data-icon="align-justify"><span class="glyphicon glyphicon-plus"></span>
             </a>';
-        } else {
-            $child = '<a href="#"
+            } else {
+                $child = '<a href="#"
                class="btn btn-primary btn-xs disabled"
                data-toggle="tooltip"
                data-title="'.trans('common.create_child_object', ['name' => trans('menu::common.item')]).'">
                 <span class="glyphicon glyphicon-plus"></span>
             </a>';
-        }
+            }
 
-        $show = '<a href="'.url("backend/menu/{$this->entity->id}").'"
+            $show = '<a href="'.url("backend/menu/{$this->entity->id}").'"
            data-toggle="tooltip"
            class="modal-link btn btn-success btn-xs"
            data-title="'.trans('common.object_details_view', ['name' => trans('menu::common.item')]).'"
            data-icon="align-justify"><span class="glyphicon glyphicon-list"></span>
         </a>';
-        $edit = '<a href="'.url("backend/menu/{$this->entity->id}/edit").'"
+            $edit = '<a href="'.url("backend/menu/{$this->entity->id}/edit").'"
            data-toggle="tooltip"
            class="modal-link btn btn-info btn-xs"
            data-title="'.trans('common.update_object', ['name' => trans('menu::common.item')]).'"
            data-label="'.trans('common.save_changes').'"
            data-icon="align-justify"><span class="glyphicon glyphicon-edit"></span>
         </a>';
-        $delete = '<a href="#"
+            $delete = '<a href="#"
             data-toggle="tooltip"
             data-title="'.trans('common.delete_object', ['name' => trans('menu::common.item')]).'"
             data-item_id="'.$this->entity->id.'"
@@ -104,6 +104,9 @@ class MenuPresenter extends Presenter
             class="delete_item btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span>
         </a>';
 
-        return $params.$child.$show.$edit.$delete;
+            return $params.$child.$show.$edit.$delete;
+        } else{
+            return '';
+        }
     }
 }
