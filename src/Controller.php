@@ -53,7 +53,7 @@ class Controller extends BackendController
         return ($menuType = $menu->typeInstance()) ? $menuType->form($menu, $this->route_prefix) :
             view('kit::backend.message', [
                 'type' => 'error',
-                'content' => trans('menu::type.unregistered'),
+                'content' => __('Error: Menu type is unregistered!'),
             ]);
     }
 
@@ -71,7 +71,7 @@ class Controller extends BackendController
         return view('kit::_modal_script', [
             'message' => [
                 'type' => 'success',
-                'content' => trans('common.update_object_success', ['name' => trans('menu::common.item')]),
+                'content' => __('Update <strong>:name</strong> success', ['name' => __('Menu item')]),
             ],
             'reloadPage' => true,
         ]);
@@ -90,16 +90,16 @@ class Controller extends BackendController
         $menus = $this->manager->titles();
         $current = $this->name;
 
-        $this->buildHeading([trans('menu::common.manage'), array_get($menus, $current)], 'fa-sitemap', [
-            '#' => trans('menu::common.menu'),
+        $this->buildHeading([__('Manage Menu'), array_get($menus, $current)], 'fa-sitemap', [
+            '#' => __('Menu'),
         ], [
             [
                 route('backend.menu.create'),
-                trans('menu::common.create_item'),
+                __('Add Menu item'),
                 ['class' => 'modal-link', 'type' => 'primary', 'size' => 'sm', 'icon' => 'plus-sign'],
                 [
-                    'title' => trans('common.create_object', ['name' => trans('menu::common.item')]),
-                    'label' => trans('common.save'),
+                    'title' => __('Create new :name', ['name' => __('Menu item')]),
+                    'label' => __('Save'),
                     'icon' => 'align-justify',
                 ],
             ],
@@ -176,7 +176,7 @@ class Controller extends BackendController
         return view('kit::_modal_script', [
             'message' => [
                 'type' => 'success',
-                'content' => trans('common.create_object_success', ['name' => trans('menu::common.item')]),
+                'content' => __('Create new <strong>:name</strong> success', ['name' => __('Menu item')]),
             ],
             'reloadPage' => true,
         ]);
@@ -234,7 +234,7 @@ class Controller extends BackendController
         return view('kit::_modal_script', [
             'message' => [
                 'type' => 'success',
-                'content' => trans('common.update_object_success', ['name' => trans('menu::common.item')]),
+                'content' => __('Update <strong>:name</strong> success', ['name' => __('Menu item')]),
             ],
             'reloadPage' => true,
         ]);
@@ -254,7 +254,7 @@ class Controller extends BackendController
 
         return Response::json([
             'type' => 'success',
-            'content' => trans('common.delete_object_success', ['name' => trans('menu::common.menu')]),
+            'content' => __('Delete <strong>:name</strong> success', ['name' => __('Menu')]),
         ]);
     }
 
@@ -289,7 +289,7 @@ class Controller extends BackendController
 
             return Response::json([
                 'type' => 'success',
-                'content' => trans('common.order_object_success', ['name' => trans('menu::common.item')]),
+                'content' => __('Update <strong>:name</strong> order success', ['name' => __('Menu item')]),
             ]);
         } else {
             return $this->dieAjax();
@@ -359,7 +359,7 @@ class Controller extends BackendController
     {
         return die(json_encode([
             'type' => 'error',
-            'content' => trans('menu::common.not_found'),
+            'content' => __('Menu not found.'),
         ]));
     }
 }

@@ -6,27 +6,27 @@
             <td><strong>{{ $menu->id}}</strong></td>
         </tr>
         <tr>
-            <td>{{ trans('menu::common.name') }}</td>
+            <td>{{ __('Menu name') }}</td>
             <td><strong>{{$menu->name}}</strong></td>
         </tr>
         <tr>
-            <td>{{ trans('menu::common.label') }}</td>
+            <td>{{ __('Label') }}</td>
             <td><strong>{!!$menu->present()->label!!}</strong></td>
         </tr>
         <tr>
-            <td>{{ trans('menu::common.type') }}</td>
+            <td>{{ __('Menu type') }}</td>
             <td><strong>{!!$menu->present()->type!!}</strong></td>
         </tr>
         <tr>
-            <td>{{ trans('menu::common.params') }}</td>
+            <td>{{ __('Parameters') }}</td>
             <td><strong>{!!$menu->present()->params!!}</strong></td>
         </tr>
         <tr>
-            <td>{{ trans('menu::common.options') }}</td>
+            <td>{{ __('Options') }}</td>
             <td><strong>{!!$menu->present()->options!!}</strong></td>
         </tr>
         <tr>
-            <td>{{ trans('menu::common.url') }}</td>
+            <td>{{ __('Url') }}</td>
             <td class="text-danger"><strong>{{ $menu->url }}</strong></td>
         </tr>
     </table>

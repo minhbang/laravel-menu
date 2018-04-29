@@ -1,7 +1,11 @@
 <?php
 return [
-    'url'          => 'Url',
-    'url_params'   => 'Url',
-    'route'        => 'Route',
-    'route_params' => 'Route name',
+    'params' => 'Menu parameters',
+    'unregistered' => 'Error: Menu type is unregistered!',
+    'not_config' => 'Not configured',
+    'url.title' => 'Url',
+    'url.url' => 'Url',
+    'route.title' => 'Route',
+    'route.name' => 'Route name',
+    'route.name_hint' => 'Select Route name...',
 ];

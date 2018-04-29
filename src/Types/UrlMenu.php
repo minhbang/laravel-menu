@@ -35,7 +35,7 @@ class UrlMenu extends MenuType
     protected function paramsAttributes()
     {
         return [
-            ['name' => 'url', 'title' => trans('menu::type.url.url'), 'rule' => 'required', 'default' => '#'],
+            ['name' => 'url', 'title' => __('Url'), 'rule' => 'required', 'default' => '#'],
         ];
     }
 }

@@ -23,13 +23,13 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot(Router $router)
     {
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'menu');
+        //$this->loadTranslationsFrom(__DIR__.'/../lang', 'menu');
         $this->loadViewsFrom(__DIR__.'/../views', 'menu');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         $this->publishes([
             __DIR__.'/../views' => base_path('resources/views/vendor/menu'),
-            __DIR__.'/../lang' => base_path('resources/lang/vendor/menu'),
+            //__DIR__.'/../lang' => base_path('resources/lang/vendor/menu'),
             __DIR__.'/../config/menu.php' => config_path('menu.php'),
         ]);
         // pattern filters

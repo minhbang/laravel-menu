@@ -37,7 +37,7 @@ class RouteMenu extends MenuType
     protected function paramsAttributes()
     {
         return [
-            ['name' => 'name', 'title' => trans('menu::type.route.name'), 'rule' => 'required', 'default' => '#'],
+            ['name' => 'name', 'title' => __('Route name'), 'rule' => 'required', 'default' => '#'],
         ];
     }
 }

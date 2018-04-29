@@ -201,6 +201,7 @@ class UneditableRoot implements Root
             } else {
                 $this->exportAttribute($item['url'], 'route');
                 $this->exportAttribute($item['label'], 'trans');
+                $this->exportAttribute($item['label'], '__');
                 $this->export($item['items'], $removeEmptyGroup, $sortBy, $sortAsc);
             }
         }

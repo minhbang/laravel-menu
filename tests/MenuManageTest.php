@@ -40,6 +40,6 @@ class MenuManageTest extends TestCase
 
         // Truy cập bằng quyền Super Admin
         $this->actingAs($this->users['super_admin'])->visit('/backend/menu')
-            ->see(trans('menu::common.manage'));
+            ->see(__('Manage Menu'));
     }
 }

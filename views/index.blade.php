@@ -37,7 +37,7 @@
 
         </div>
         <div class="panel-footer">
-            <span class="glyphicon glyphicon-info-sign"></span> {{ trans('menu::common.order_hint')}}
+            <span class="glyphicon glyphicon-info-sign"></span> {{ __('Drag and drop to change menu position')}}
         </div>
     </div>
 @stop
@@ -53,7 +53,7 @@
                 },
                 max_depth:{{ $max_depth }},
                 trans: {
-                    name: '{{ trans('menu::common.item') }}'
+                    name: '{{ __('Menu item') }}'
                 },
                 csrf_token: window.Laravel.csrfToken
             });

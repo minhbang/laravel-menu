@@ -5,7 +5,7 @@ return [
         'backend.sidebar.appearance.menu' => [
             'priority' => 3,
             'url' => 'route:backend.menu.index',
-            'label' => 'trans:menu::common.menu',
+            'label' => '__:Menu',
             'icon' => 'fa-sitemap',
             'active' => 'backend/menu*',
         ],
@@ -35,12 +35,12 @@ return [
     // Danh sách menu item types
     'types' => [
         'url' => [
-            'title' => 'trans::menu::type.url.title',
+            'title' => '__::Url',
             'icon' => 'external-link',
             'class' => \Minhbang\Menu\Types\UrlMenu::class,
         ],
         'route' => [
-            'title' => 'trans::menu::type.route.title',
+            'title' => '__::Route',
             'icon' => 'link',
             'class' => \Minhbang\Menu\Types\RouteMenu::class,
         ],
@@ -87,20 +87,20 @@ return [
                 'items' => [
                     'dashboard' => [
                         'url' => 'route:manage.dashboard',
-                        'label' => 'trans:backend.dashboard',
+                        'label' => '__:Dashboard',
                         'icon' => 'dashboard',
                         'class' => 'special_link',
                     ],
                     'home' => [
                         'url' => '/',
-                        'label' => 'trans:common.home',
+                        'label' => '__:Homepage',
                         'icon' => 'home',
                         'attributes' => ['target' => '_blank'],
                     ],
-                    'content' => ['label' => 'trans:menu::common.items.content', 'icon' => 'fa-files-o'],
-                    'user' => ['label' => 'trans:menu::common.items.user', 'icon' => 'fa-university'],
-                    'setting' => ['label' => 'trans:menu::common.items.setting', 'icon' => 'fa-cogs'],
-                    'maintenance' => ['label' => 'trans:menu::common.items.maintenance', 'icon' => 'fa-wrench'],
+                    'content' => ['label' => '__:Content', 'icon' => 'fa-files-o'],
+                    'user' => ['label' => '__:User', 'icon' => 'fa-university'],
+                    'setting' => ['label' => '__:Setting', 'icon' => 'fa-cogs'],
+                    'maintenance' => ['label' => '__:Maintenance', 'icon' => 'fa-wrench'],
                 ],
                 'presenter' => 'metis',
                 'options' => [
@@ -114,44 +114,44 @@ return [
                 'items' => [
                     'dashboard' => [
                         'url' => 'route:backend.dashboard',
-                        'label' => 'trans:backend.dashboard',
+                        'label' => '__:Dashboard',
                         'icon' => 'dashboard',
                         'class' => 'special_link',
                     ],
                     'home' => [
                         'url' => '/',
-                        'label' => 'trans:common.home',
+                        'label' => '__:Homepage',
                         'icon' => 'home',
                         'attributes' => ['target' => '_blank'],
                     ],
-                    'content' => ['label' => 'trans:menu::common.items.content', 'icon' => 'fa-files-o'],
+                    'content' => ['label' => '__:Content', 'icon' => 'fa-files-o'],
                     'media' => [
-                        'label' => 'trans:menu::common.items.media',
+                        'label' => '__:Media',
                         'icon' => 'fa-folder-open',
                         'role' => 'sys.admin',
                     ],
                     'user' => [
-                        'label' => 'trans:menu::common.items.user',
+                        'label' => '__:User',
                         'icon' => 'fa-university',
                         'role' => 'sys.admin',
                     ],
                     'appearance' => [
-                        'label' => 'trans:menu::common.items.appearance',
+                        'label' => '__:Appearance',
                         'icon' => 'fa-paint-brush',
                         'role' => 'sys.admin',
                     ],
                     'setting' => [
-                        'label' => 'trans:menu::common.items.setting',
+                        'label' => '__:Setting',
                         'icon' => 'fa-cogs',
                         'role' => 'sys.admin',
                     ],
                     'tools' => [
-                        'label' => 'trans:menu::common.items.tools',
+                        'label' => '__:Tools',
                         'icon' => 'fa-wrench',
                         'role' => 'sys.admin',
                     ],
                     'maintenance' => [
-                        'label' => 'trans:menu::common.items.maintenance',
+                        'label' => '__:Maintenance',
                         'icon' => 'fa-wrench',
                         'role' => 'sys.admin',
                     ],
